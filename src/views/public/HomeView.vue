@@ -36,8 +36,10 @@ const categorias = [
 
 <template>
   <main>
-    <!-- Banner publicitario full-width -->
-    <HomeBanner :banners="banners" />
+    <!-- Banner publicitario -->
+    <div v-if="banners.length > 0" class="container-app px-4 pt-6">
+      <HomeBanner :banners="banners" />
+    </div>
 
     <!-- Hero -->
     <section class="bg-gradient-to-br from-primary-50 to-accent-50 py-16 md:py-24">
