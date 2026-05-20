@@ -41,7 +41,7 @@ onUnmounted(pausar)
   <section
     v-if="banners.length > 0"
     class="w-full relative overflow-hidden bg-surface-muted rounded-xl"
-    style="aspect-ratio: 1200/450"
+    style="aspect-ratio: 12/5"
     @mouseenter="pausar"
     @mouseleave="iniciarAutoplay"
   >

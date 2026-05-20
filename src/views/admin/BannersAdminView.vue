@@ -139,7 +139,7 @@ async function borrar(id: string) {
             <span class="text-sm text-text-secondary font-medium">
               {{ preview ? 'Cambiar imagen' : 'Seleccionar imagen del banner' }}
             </span>
-            <span class="text-xs text-text-muted">Se optimizará a 1200×450 px</span>
+            <span class="text-xs text-text-muted">Se optimizará a 1200×500 px</span>
           </label>
         </div>
 

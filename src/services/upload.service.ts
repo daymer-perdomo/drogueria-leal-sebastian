@@ -36,7 +36,7 @@ function optimizarImagenConTamano(archivo: File, ancho: number, alto: number): P
  * Sube un banner optimizado a 1200×450 JPEG.
  */
 export async function subirImagenBanner(archivo: File): Promise<string> {
-  const blob = await optimizarImagenConTamano(archivo, 1200, 450)
+  const blob = await optimizarImagenConTamano(archivo, 1200, 500)
   const nombre = `banners/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`
   const { error } = await supabase.storage.from(BUCKET).upload(nombre, blob, {
     cacheControl: '3600', upsert: false, contentType: 'image/jpeg',
