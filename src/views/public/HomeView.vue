@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useProducts } from '../../composables/useProducts'
 import ProductGrid from '../../components/product/ProductGrid.vue'
 import AppButton from '../../components/ui/AppButton.vue'
+import HomeBanner from '../../components/ui/HomeBanner.vue'
+import * as bannersService from '../../services/banners.service'
+import type { Banner } from '../../services/banners.service'
 import {
   IconPill,
   IconBottle,
@@ -13,8 +16,14 @@ import {
 } from '@tabler/icons-vue'
 
 const { productos, cargando, cargar } = useProducts({ porPagina: 8, soloActivos: true })
+const banners = ref<Banner[]>([])
 
-onMounted(cargar)
+onMounted(async () => {
+  await Promise.all([
+    cargar(),
+    bannersService.listarBanners(true).then((b) => { banners.value = b }).catch(() => {}),
+  ])
+})
 
 const categorias = [
   { slug: 'medicamentos', label: 'Medicamentos', icon: IconPill },
@@ -27,6 +36,9 @@ const categorias = [
 
 <template>
   <main>
+    <!-- Banner publicitario full-width -->
+    <HomeBanner :banners="banners" />
+
     <!-- Hero -->
     <section class="bg-gradient-to-br from-primary-50 to-accent-50 py-16 md:py-24">
       <div class="container-app text-center">

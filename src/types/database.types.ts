@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      banners: {
+        Row: {
+          activo: boolean
+          created_at: string
+          enlace: string | null
+          id: string
+          imagen_url: string
+          orden: number
+          subtitulo: string | null
+          titulo: string | null
+        }
+        Insert: {
+          activo?: boolean
+          created_at?: string
+          enlace?: string | null
+          id?: string
+          imagen_url: string
+          orden?: number
+          subtitulo?: string | null
+          titulo?: string | null
+        }
+        Update: {
+          activo?: boolean
+          created_at?: string
+          enlace?: string | null
+          id?: string
+          imagen_url?: string
+          orden?: number
+          subtitulo?: string | null
+          titulo?: string | null
+        }
+        Relationships: []
+      }
       categorias: {
         Row: {
           campos_schema: Json

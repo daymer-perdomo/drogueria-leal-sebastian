@@ -5,41 +5,45 @@ const TAMANO = 600
 const CALIDAD = 0.85
 
 function optimizarImagen(archivo: File): Promise<Blob> {
+  return optimizarImagenConTamano(archivo, TAMANO, TAMANO)
+}
+
+function optimizarImagenConTamano(archivo: File, ancho: number, alto: number): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image()
     const url = URL.createObjectURL(archivo)
-
     img.onload = () => {
       URL.revokeObjectURL(url)
-
       const canvas = document.createElement('canvas')
-      canvas.width = TAMANO
-      canvas.height = TAMANO
+      canvas.width = ancho
+      canvas.height = alto
       const ctx = canvas.getContext('2d')!
-
-      // Escala "cover": llena 600×600 recortando al centro
-      const escala = Math.max(TAMANO / img.width, TAMANO / img.height)
+      const escala = Math.max(ancho / img.width, alto / img.height)
       const w = img.width * escala
       const h = img.height * escala
-      ctx.drawImage(img, (TAMANO - w) / 2, (TAMANO - h) / 2, w, h)
-
+      ctx.drawImage(img, (ancho - w) / 2, (alto - h) / 2, w, h)
       canvas.toBlob(
-        (blob) => {
-          if (blob) resolve(blob)
-          else reject(new Error('No se pudo optimizar la imagen'))
-        },
-        'image/jpeg',
-        CALIDAD,
+        (blob) => { if (blob) resolve(blob); else reject(new Error('No se pudo optimizar')) },
+        'image/jpeg', CALIDAD,
       )
     }
-
-    img.onerror = () => {
-      URL.revokeObjectURL(url)
-      reject(new Error('No se pudo cargar la imagen'))
-    }
-
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('No se pudo cargar')) }
     img.src = url
   })
+}
+
+/**
+ * Sube un banner optimizado a 1200×450 JPEG.
+ */
+export async function subirImagenBanner(archivo: File): Promise<string> {
+  const blob = await optimizarImagenConTamano(archivo, 1200, 450)
+  const nombre = `banners/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`
+  const { error } = await supabase.storage.from(BUCKET).upload(nombre, blob, {
+    cacheControl: '3600', upsert: false, contentType: 'image/jpeg',
+  })
+  if (error) throw error
+  const { data } = supabase.storage.from(BUCKET).getPublicUrl(nombre)
+  return data.publicUrl
 }
 
 /**

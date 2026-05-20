@@ -124,6 +124,12 @@ const router = createRouter({
           component: () => import('../views/admin/CategoriasAdminView.vue'),
           meta: { titulo: 'Gestión de Categorías' },
         },
+        {
+          path: 'banners',
+          name: 'admin-banners',
+          component: () => import('../views/admin/BannersAdminView.vue'),
+          meta: { titulo: 'Banners publicitarios' },
+        },
       ],
     },
     // ── 404 ──────────────────────────────────────────────────────────
