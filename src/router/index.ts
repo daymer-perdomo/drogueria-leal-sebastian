@@ -118,6 +118,12 @@ const router = createRouter({
           component: () => import('../views/admin/ClientesAdminView.vue'),
           meta: { titulo: 'Gestión de Clientes' },
         },
+        {
+          path: 'categorias',
+          name: 'admin-categorias',
+          component: () => import('../views/admin/CategoriasAdminView.vue'),
+          meta: { titulo: 'Gestión de Categorías' },
+        },
       ],
     },
     // ── 404 ──────────────────────────────────────────────────────────
