@@ -105,6 +105,12 @@ const router = createRouter({
           component: () => import('../views/admin/QuejasAdminView.vue'),
           meta: { titulo: 'Gestión de Quejas' },
         },
+        {
+          path: 'clientes',
+          name: 'admin-clientes',
+          component: () => import('../views/admin/ClientesAdminView.vue'),
+          meta: { titulo: 'Gestión de Clientes' },
+        },
       ],
     },
     // ── 404 ──────────────────────────────────────────────────────────

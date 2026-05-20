@@ -11,7 +11,7 @@ import { IconPill } from '@tabler/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
-const { login, cargando } = useAuth()
+const { login, cargando, esAdmin } = useAuth()
 const { validationSchema } = useValidation(loginSchema)
 
 const { handleSubmit, errors } = useForm({ validationSchema })
@@ -22,7 +22,11 @@ const onSubmit = handleSubmit(async (values) => {
   const ok = await login(values.email, values.password)
   if (ok) {
     const redirect = route.query.redirect as string | undefined
-    router.push(redirect ?? { name: 'home' })
+    if (redirect) {
+      router.push(redirect)
+    } else {
+      router.push(esAdmin.value ? { name: 'admin-dashboard' } : { name: 'home' })
+    }
   }
 })
 </script>

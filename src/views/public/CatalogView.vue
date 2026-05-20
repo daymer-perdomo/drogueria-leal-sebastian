@@ -2,22 +2,34 @@
 import { onMounted, watch, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProducts } from '../../composables/useProducts'
-import { CATEGORIAS } from '../../constants/categories'
+import * as categoriasService from '../../services/categories.service'
+import type { Categoria } from '../../types/category.types'
 import ProductGrid from '../../components/product/ProductGrid.vue'
 import AppInput from '../../components/ui/AppInput.vue'
 
 const route = useRoute()
-const { productos, cargando, totalProductos, totalPaginas, filtros, cargar, aplicarFiltros, irAPagina } = useProducts({ soloActivos: true })
+const { productos, cargando, totalProductos, totalPaginas, filtros, aplicarFiltros, irAPagina } = useProducts({ soloActivos: true })
 
 const busqueda = ref('')
+const categorias = ref<Categoria[]>([])
 
-onMounted(() => {
-  const categoria = route.query.categoria as string | undefined
-  aplicarFiltros({ categoriaId: categoria })
+function slugAId(slug: string | undefined): string | undefined {
+  if (!slug) return undefined
+  return categorias.value.find((c) => c.slug === slug)?.id
+}
+
+onMounted(async () => {
+  try {
+    categorias.value = await categoriasService.listarCategorias()
+  } catch {
+    // categories are non-critical; proceed without filter sidebar
+  }
+  const slug = route.query.categoria as string | undefined
+  aplicarFiltros({ categoriaId: slugAId(slug) })
 })
 
-watch(() => route.query.categoria, (nueva) => {
-  aplicarFiltros({ categoriaId: nueva as string | undefined })
+watch(() => route.query.categoria, (slug) => {
+  aplicarFiltros({ categoriaId: slugAId(slug as string | undefined) })
 })
 
 let timeout: ReturnType<typeof setTimeout>
@@ -54,12 +66,12 @@ function onBusqueda() {
                   Todas
                 </button>
               </li>
-              <li v-for="cat in CATEGORIAS" :key="cat.id">
+              <li v-for="cat in categorias" :key="cat.id">
                 <button
                   :class="['w-full text-left px-2 py-1.5 rounded-md text-sm transition-colors duration-base', filtros.categoriaId === cat.id ? 'bg-primary-50 text-primary font-medium' : 'text-text-secondary hover:bg-surface-muted']"
                   @click="aplicarFiltros({ categoriaId: cat.id })"
                 >
-                  {{ cat.label }}
+                  {{ cat.nombre }}
                 </button>
               </li>
             </ul>

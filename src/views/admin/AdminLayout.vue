@@ -7,6 +7,7 @@ import {
   IconShoppingBag,
   IconNews,
   IconMessageReport,
+  IconUsers,
   IconArrowLeft,
 } from '@tabler/icons-vue'
 
@@ -14,6 +15,7 @@ const route = useRoute()
 
 const nav = [
   { name: 'admin-dashboard', label: 'Dashboard', icon: IconLayoutDashboard },
+  { name: 'admin-clientes', label: 'Clientes', icon: IconUsers },
   { name: 'admin-productos', label: 'Productos', icon: IconPackage },
   { name: 'admin-capturar', label: 'Capturar Producto', icon: IconCamera },
   { name: 'admin-ordenes', label: 'Órdenes', icon: IconShoppingBag },

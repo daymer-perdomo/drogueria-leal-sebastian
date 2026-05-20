@@ -1,69 +1,24 @@
-import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
+import type { RouteLocationNormalized } from 'vue-router'
 import { useAuthStore } from '../stores/auth.store'
 
-/**
- * Guard que protege rutas que requieren autenticación.
- */
-export async function requireAuth(
-  to: RouteLocationNormalized,
-  _from: RouteLocationNormalized,
-  next: NavigationGuardNext,
-) {
+export async function requireAuth(to: RouteLocationNormalized) {
   const authStore = useAuthStore()
-
-  if (!authStore.inicializado) {
-    await authStore.inicializar()
-  }
-
-  if (!authStore.estaAutenticado) {
-    return next({ name: 'login', query: { redirect: to.fullPath } })
-  }
-
-  next()
+  if (!authStore.inicializado) await authStore.inicializar()
+  if (!authStore.estaAutenticado) return { name: 'login', query: { redirect: to.fullPath } }
+  return true
 }
 
-/**
- * Guard que protege rutas exclusivas para administradores.
- */
-export async function requireAdmin(
-  to: RouteLocationNormalized,
-  _from: RouteLocationNormalized,
-  next: NavigationGuardNext,
-) {
+export async function requireAdmin(to: RouteLocationNormalized) {
   const authStore = useAuthStore()
-
-  if (!authStore.inicializado) {
-    await authStore.inicializar()
-  }
-
-  if (!authStore.estaAutenticado) {
-    return next({ name: 'login', query: { redirect: to.fullPath } })
-  }
-
-  if (!authStore.esAdmin) {
-    return next({ name: 'home' })
-  }
-
-  next()
+  if (!authStore.inicializado) await authStore.inicializar()
+  if (!authStore.estaAutenticado) return { name: 'login', query: { redirect: to.fullPath } }
+  if (!authStore.esAdmin) return { name: 'home' }
+  return true
 }
 
-/**
- * Guard que redirige a home si el usuario ya está autenticado (para login/registro).
- */
-export async function redirectIfAuthenticated(
-  _to: RouteLocationNormalized,
-  _from: RouteLocationNormalized,
-  next: NavigationGuardNext,
-) {
+export async function redirectIfAuthenticated() {
   const authStore = useAuthStore()
-
-  if (!authStore.inicializado) {
-    await authStore.inicializar()
-  }
-
-  if (authStore.estaAutenticado) {
-    return next({ name: 'home' })
-  }
-
-  next()
+  if (!authStore.inicializado) await authStore.inicializar()
+  if (authStore.estaAutenticado) return authStore.esAdmin ? { name: 'admin-dashboard' } : { name: 'home' }
+  return true
 }

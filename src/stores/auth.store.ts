@@ -14,6 +14,7 @@ export const useAuthStore = defineStore('auth', () => {
   const esCliente = computed(() => user.value?.perfil?.rol === 'cliente')
 
   async function inicializar() {
+    if (inicializado.value) return
     cargando.value = true
     try {
       const sesion = await authService.obtenerSesion()
@@ -45,7 +46,11 @@ export const useAuthStore = defineStore('auth', () => {
   async function registro(email: string, password: string, nombre: string, telefono?: string) {
     cargando.value = true
     try {
-      await authService.registrarUsuario(email, password, nombre, telefono)
+      const datos = await authService.registrarUsuario(email, password, nombre, telefono)
+      if (datos.session?.user) {
+        const perfil = await authService.obtenerPerfil(datos.session.user.id)
+        user.value = { id: datos.session.user.id, email: datos.session.user.email!, perfil }
+      }
     } finally {
       cargando.value = false
     }
@@ -62,17 +67,11 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Escucha cambios de sesión en tiempo real
-  supabase.auth.onAuthStateChange(async (event, sesion) => {
-    if (event === 'SIGNED_IN' && sesion?.user) {
-      try {
-        const perfil = await authService.obtenerPerfil(sesion.user.id)
-        user.value = { id: sesion.user.id, email: sesion.user.email!, perfil }
-      } catch {
-        user.value = null
-      }
-    } else if (event === 'SIGNED_OUT') {
+  // Solo detecta cierres de sesión externos (otro tab, expiración)
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_OUT') {
       user.value = null
+      inicializado.value = false
     }
   })
 

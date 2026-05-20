@@ -10,7 +10,7 @@ import AppCard from '../../components/ui/AppCard.vue'
 import { IconPill } from '@tabler/icons-vue'
 
 const router = useRouter()
-const { registro, cargando } = useAuth()
+const { registro, cargando, estaAutenticado } = useAuth()
 const { validationSchema } = useValidation(registroSchema)
 
 const { handleSubmit, errors } = useForm({ validationSchema })
@@ -23,7 +23,7 @@ const { value: confirmarPassword } = useField<string>('confirmarPassword')
 const onSubmit = handleSubmit(async (values) => {
   const ok = await registro(values.email, values.password, values.nombre, values.telefono)
   if (ok) {
-    router.push({ name: 'login' })
+    router.push(estaAutenticado.value ? { name: 'home' } : { name: 'login' })
   }
 })
 </script>

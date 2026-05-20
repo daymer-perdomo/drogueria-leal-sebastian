@@ -30,7 +30,7 @@ export function useAuth() {
   ): Promise<boolean> {
     try {
       await store.registro(email, password, nombre, telefono)
-      notif.exito('Registro exitoso. Verifica tu correo para confirmar la cuenta.')
+      notif.exito('¡Cuenta creada exitosamente!')
       return true
     } catch (err) {
       const mensaje = err instanceof Error ? err.message : 'Error al registrar usuario'

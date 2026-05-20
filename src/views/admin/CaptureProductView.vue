@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useCamera } from '../../composables/useCamera'
 import { useNotification } from '../../composables/useNotification'
 import { useForm, useField } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
-import { CATEGORIAS, getCategoriaById } from '../../constants/categories'
-import type { DefinicionCategoria } from '../../constants/categories'
+import type { Categoria } from '../../types/category.types'
+import * as categoriasService from '../../services/categories.service'
 import * as productsService from '../../services/products.service'
 import AppButton from '../../components/ui/AppButton.vue'
 import AppInput from '../../components/ui/AppInput.vue'
@@ -15,10 +15,20 @@ import { IconCamera, IconCheck, IconX, IconRefresh } from '@tabler/icons-vue'
 const { fotoPreview, archivoSeleccionado, subiendo, errorCaptura, manejarSeleccion, subirFoto, limpiar } = useCamera()
 const notif = useNotification()
 
+// ── Categorías desde la base de datos ───────────────────────────────────────
+const categorias = ref<Categoria[]>([])
+onMounted(async () => {
+  try {
+    categorias.value = await categoriasService.listarCategorias()
+  } catch {
+    // silently ignore; user will see empty category list
+  }
+})
+
 // ── Formulario base ─────────────────────────────────────────────────────────
 const categoriaSeleccionadaId = ref<string>('')
-const categoriaActual = computed<DefinicionCategoria | undefined>(() =>
-  categoriaSeleccionadaId.value ? getCategoriaById(categoriaSeleccionadaId.value) : undefined,
+const categoriaActual = computed<Categoria | undefined>(() =>
+  categorias.value.find((c) => c.id === categoriaSeleccionadaId.value),
 )
 
 const schemaBase = z.object({
@@ -43,7 +53,7 @@ const camposExtra = ref<Record<string, string | boolean>>({})
 watch(categoriaActual, (nueva) => {
   camposExtra.value = {}
   if (nueva) {
-    for (const campo of nueva.campos) {
+    for (const campo of nueva.campos_schema) {
       camposExtra.value[campo.nombre] = campo.tipo === 'boolean' ? false : ''
     }
   }
@@ -163,7 +173,7 @@ const onSubmit = handleSubmit(async (valores) => {
         <h2 class="font-semibold text-text-primary mb-4 text-lg">2. Categoría</h2>
         <div class="grid grid-cols-2 gap-2">
           <button
-            v-for="cat in CATEGORIAS"
+            v-for="cat in categorias"
             :key="cat.id"
             type="button"
             :class="[
@@ -174,7 +184,7 @@ const onSubmit = handleSubmit(async (valores) => {
             ]"
             @click="categoriaSeleccionadaId = cat.id"
           >
-            {{ cat.label }}
+            {{ cat.nombre }}
           </button>
         </div>
       </section>
@@ -230,10 +240,10 @@ const onSubmit = handleSubmit(async (valores) => {
       <!-- PASO 4: Campos dinámicos de categoría -->
       <section v-if="categoriaActual" class="card p-5">
         <h2 class="font-semibold text-text-primary mb-4 text-lg">
-          4. Información de {{ categoriaActual.label }}
+          4. Información de {{ categoriaActual.nombre }}
         </h2>
         <div class="flex flex-col gap-4">
-          <template v-for="campo in categoriaActual.campos" :key="campo.nombre">
+          <template v-for="campo in categoriaActual.campos_schema" :key="campo.nombre">
             <!-- Boolean -->
             <div v-if="campo.tipo === 'boolean'" class="flex items-center gap-3">
               <input
