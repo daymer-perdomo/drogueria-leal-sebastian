@@ -1,0 +1,89 @@
+<script setup lang="ts">
+import { onMounted, watch, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { useProducts } from '../../composables/useProducts'
+import { CATEGORIAS } from '../../constants/categories'
+import ProductGrid from '../../components/product/ProductGrid.vue'
+import AppInput from '../../components/ui/AppInput.vue'
+
+const route = useRoute()
+const { productos, cargando, totalProductos, totalPaginas, filtros, cargar, aplicarFiltros, irAPagina } = useProducts({ soloActivos: true })
+
+const busqueda = ref('')
+
+onMounted(() => {
+  const categoria = route.query.categoria as string | undefined
+  aplicarFiltros({ categoriaId: categoria })
+})
+
+watch(() => route.query.categoria, (nueva) => {
+  aplicarFiltros({ categoriaId: nueva as string | undefined })
+})
+
+let timeout: ReturnType<typeof setTimeout>
+function onBusqueda() {
+  clearTimeout(timeout)
+  timeout = setTimeout(() => aplicarFiltros({ busqueda: busqueda.value || undefined }), 400)
+}
+</script>
+
+<template>
+  <main class="container-app py-8">
+    <h1 class="text-3xl font-bold text-text-primary mb-6">Catálogo</h1>
+
+    <div class="flex flex-col md:flex-row gap-6">
+      <!-- Sidebar filtros -->
+      <aside class="w-full md:w-56 flex-shrink-0">
+        <div class="card p-4 flex flex-col gap-4">
+          <h3 class="font-semibold text-text-primary">Filtros</h3>
+
+          <AppInput
+            v-model="busqueda"
+            placeholder="Buscar producto..."
+            @input="onBusqueda"
+          />
+
+          <div>
+            <h4 class="text-sm font-medium text-text-secondary mb-2">Categoría</h4>
+            <ul class="flex flex-col gap-1">
+              <li>
+                <button
+                  :class="['w-full text-left px-2 py-1.5 rounded-md text-sm transition-colors duration-base', !filtros.categoriaId ? 'bg-primary-50 text-primary font-medium' : 'text-text-secondary hover:bg-surface-muted']"
+                  @click="aplicarFiltros({ categoriaId: undefined })"
+                >
+                  Todas
+                </button>
+              </li>
+              <li v-for="cat in CATEGORIAS" :key="cat.id">
+                <button
+                  :class="['w-full text-left px-2 py-1.5 rounded-md text-sm transition-colors duration-base', filtros.categoriaId === cat.id ? 'bg-primary-50 text-primary font-medium' : 'text-text-secondary hover:bg-surface-muted']"
+                  @click="aplicarFiltros({ categoriaId: cat.id })"
+                >
+                  {{ cat.label }}
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Productos -->
+      <div class="flex-1 min-w-0">
+        <p class="text-sm text-text-muted mb-4">{{ totalProductos }} producto{{ totalProductos !== 1 ? 's' : '' }} encontrado{{ totalProductos !== 1 ? 's' : '' }}</p>
+        <ProductGrid :productos="productos" :cargando="cargando" />
+
+        <!-- Paginación -->
+        <div v-if="totalPaginas > 1" class="flex justify-center gap-2 mt-8">
+          <button
+            v-for="p in totalPaginas"
+            :key="p"
+            :class="['w-9 h-9 rounded-md text-sm font-medium transition-colors duration-base', filtros.pagina === p ? 'bg-primary text-text-inverse' : 'border border-border text-text-secondary hover:border-primary hover:text-primary']"
+            @click="irAPagina(p)"
+          >
+            {{ p }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</template>

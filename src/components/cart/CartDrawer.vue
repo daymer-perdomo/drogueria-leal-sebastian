@@ -1,0 +1,122 @@
+<script setup lang="ts">
+import { useCart } from '../../composables/useCart'
+import AppButton from '../ui/AppButton.vue'
+import { IconX, IconShoppingCartOff, IconPill, IconBrandWhatsapp } from '@tabler/icons-vue'
+
+const { items, total, estaVacio, abierto, cerrar, quitar, actualizarCantidad, pedirPorWhatsapp } = useCart()
+
+function formatearPrecio(precio: number) {
+  return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(precio)
+}
+</script>
+
+<template>
+  <Teleport to="body">
+    <Transition name="drawer">
+      <div
+        v-if="abierto"
+        class="fixed inset-0 flex"
+        style="z-index: var(--z-modal-backdrop)"
+      >
+        <!-- Backdrop -->
+        <div class="flex-1 bg-surface-overlay" @click="cerrar()" />
+
+        <!-- Panel -->
+        <div class="w-full max-w-sm bg-surface flex flex-col shadow-xl">
+          <!-- Header -->
+          <div class="flex items-center justify-between p-4 border-b border-border">
+            <h2 class="text-lg font-semibold text-text-primary">Carrito de compras</h2>
+            <button
+              class="p-1 text-text-muted hover:text-text-primary transition-colors duration-base"
+              @click="cerrar()"
+            >
+              <IconX class="w-5 h-5" />
+            </button>
+          </div>
+
+          <!-- Items -->
+          <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+            <div v-if="estaVacio" class="flex-1 flex flex-col items-center justify-center text-text-muted py-8">
+              <IconShoppingCartOff class="w-12 h-12 mb-3 opacity-50" />
+              <p class="font-medium">Tu carrito está vacío</p>
+            </div>
+
+            <div
+              v-for="item in items"
+              :key="item.producto_id"
+              class="flex gap-3 p-3 bg-surface-subtle rounded-lg"
+            >
+              <img
+                v-if="item.imagen"
+                :src="item.imagen"
+                :alt="item.nombre"
+                class="w-16 h-16 object-cover rounded-md flex-shrink-0"
+              />
+              <div v-else class="w-16 h-16 bg-surface-muted rounded-md flex-shrink-0 flex items-center justify-center text-text-muted">
+                <IconPill class="w-8 h-8" />
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-text-primary truncate">{{ item.nombre }}</p>
+                <p class="text-sm text-primary font-semibold mt-0.5">{{ formatearPrecio(item.precio) }}</p>
+
+                <div class="flex items-center gap-2 mt-2">
+                  <button
+                    class="w-7 h-7 rounded-md border border-border flex items-center justify-center text-text-secondary hover:border-primary hover:text-primary transition-colors duration-base"
+                    @click="actualizarCantidad(item.producto_id, item.cantidad - 1)"
+                  >
+                    −
+                  </button>
+                  <span class="text-sm font-medium w-6 text-center">{{ item.cantidad }}</span>
+                  <button
+                    class="w-7 h-7 rounded-md border border-border flex items-center justify-center text-text-secondary hover:border-primary hover:text-primary transition-colors duration-base"
+                    :disabled="item.cantidad >= item.stock"
+                    @click="actualizarCantidad(item.producto_id, item.cantidad + 1)"
+                  >
+                    +
+                  </button>
+                  <button
+                    class="ml-auto text-error text-xs hover:underline"
+                    @click="quitar(item.producto_id)"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div v-if="!estaVacio" class="p-4 border-t border-border flex flex-col gap-3">
+            <div class="flex justify-between items-center">
+              <span class="font-medium text-text-secondary">Total estimado</span>
+              <span class="text-xl font-bold text-primary">{{ formatearPrecio(total) }}</span>
+            </div>
+            <p class="text-xs text-text-muted text-center">
+              El pedido se confirma vía WhatsApp
+            </p>
+            <AppButton bloque class="bg-[#25D366] hover:bg-[#1ebe5d] text-white border-0 focus-visible:ring-green-400" @click="pedirPorWhatsapp">
+              <IconBrandWhatsapp class="w-5 h-5" />
+              Pedir por WhatsApp
+            </AppButton>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
+</template>
+
+<style scoped>
+.drawer-enter-active,
+.drawer-leave-active {
+  transition: opacity var(--transition-slow);
+}
+.drawer-enter-active .flex-col,
+.drawer-leave-active .flex-col {
+  transition: transform var(--transition-slow);
+}
+.drawer-enter-from,
+.drawer-leave-to {
+  opacity: 0;
+}
+</style>
