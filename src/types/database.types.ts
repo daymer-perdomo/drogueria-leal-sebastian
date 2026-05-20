@@ -103,6 +103,27 @@ export type Database = {
           },
         ]
       }
+      configuracion: {
+        Row: {
+          descripcion: string | null
+          id: string
+          updated_at: string | null
+          valor: string
+        }
+        Insert: {
+          descripcion?: string | null
+          id: string
+          updated_at?: string | null
+          valor: string
+        }
+        Update: {
+          descripcion?: string | null
+          id?: string
+          updated_at?: string | null
+          valor?: string
+        }
+        Relationships: []
+      }
       noticias: {
         Row: {
           contenido: string
