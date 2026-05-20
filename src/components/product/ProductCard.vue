@@ -47,25 +47,25 @@ function onAgregarCarrito() {
     </RouterLink>
 
     <!-- Contenido -->
-    <div class="p-4 flex flex-col flex-1 gap-2">
+    <div class="p-2 sm:p-4 flex flex-col flex-1 gap-1.5 sm:gap-2">
       <AppBadge variante="default">{{ producto.categoria?.nombre }}</AppBadge>
 
       <RouterLink :to="{ name: 'producto-detalle', params: { id: producto.id } }">
-        <h3 class="font-semibold text-text-primary text-base leading-tight hover:text-primary transition-colors duration-base line-clamp-2">
+        <h3 class="font-semibold text-text-primary text-xs sm:text-base leading-tight hover:text-primary transition-colors duration-base line-clamp-2">
           {{ producto.nombre }}
         </h3>
       </RouterLink>
 
-      <p class="text-sm text-text-secondary line-clamp-2 flex-1">{{ producto.descripcion }}</p>
+      <p class="hidden sm:block text-sm text-text-secondary line-clamp-2 sm:flex-1">{{ producto.descripcion }}</p>
 
-      <div class="flex items-center justify-between mt-auto pt-2">
-        <span class="text-xl font-bold text-primary">{{ formatearPrecio(producto.precio) }}</span>
+      <div class="flex items-center justify-between mt-auto pt-1 sm:pt-2">
+        <span class="text-sm sm:text-xl font-bold text-primary">{{ formatearPrecio(producto.precio) }}</span>
         <AppBadge :variante="producto.stock > 0 ? 'success' : 'error'">
-          {{ producto.stock > 0 ? `Stock: ${producto.stock}` : 'Agotado' }}
+          {{ producto.stock > 0 ? `${producto.stock}` : 'Agotado' }}
         </AppBadge>
       </div>
 
-      <div class="flex gap-2">
+      <div class="flex gap-1.5 sm:gap-2">
         <AppButton
           variante="outline"
           tamano="sm"
@@ -82,7 +82,7 @@ function onAgregarCarrito() {
           @click="pedirProducto(producto.nombre, producto.precio)"
         >
           <IconBrandWhatsapp class="w-4 h-4" />
-          {{ producto.stock > 0 ? 'WhatsApp' : 'Sin stock' }}
+          <span class="hidden sm:inline">{{ producto.stock > 0 ? 'WhatsApp' : 'Sin stock' }}</span>
         </AppButton>
       </div>
     </div>

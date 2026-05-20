@@ -1,6 +1,16 @@
+import { ref } from 'vue'
 import type { ItemCarrito } from '../types/order.types'
+import { getConfig } from '../services/configuracion.service'
 
-const NUMERO = import.meta.env.VITE_WHATSAPP_NUMBER as string
+const _numero = ref<string>(import.meta.env.VITE_WHATSAPP_NUMBER as string)
+let _cargado = false
+
+async function _cargarNumero() {
+  if (_cargado) return
+  _cargado = true
+  const val = await getConfig('whatsapp_numero')
+  if (val) _numero.value = val
+}
 
 function formatearPrecio(precio: number) {
   return new Intl.NumberFormat('es-CO', {
@@ -11,6 +21,8 @@ function formatearPrecio(precio: number) {
 }
 
 export function useWhatsapp() {
+  _cargarNumero()
+
   function pedirCarrito(items: ItemCarrito[], total: number) {
     const lineas = items.map(
       (item) =>
@@ -44,7 +56,7 @@ export function useWhatsapp() {
   }
 
   function _abrir(mensaje: string) {
-    const url = `https://wa.me/${NUMERO}?text=${encodeURIComponent(mensaje)}`
+    const url = `https://wa.me/${_numero.value}?text=${encodeURIComponent(mensaje)}`
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 

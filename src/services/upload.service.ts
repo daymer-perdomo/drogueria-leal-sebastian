@@ -32,11 +32,37 @@ function optimizarImagenConTamano(archivo: File, ancho: number, alto: number): P
   })
 }
 
+function redimensionarBanner(archivo: File): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(archivo)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      const TARGET_W = 1774
+      const TARGET_H = 887
+      const canvas = document.createElement('canvas')
+      canvas.width = TARGET_W
+      canvas.height = TARGET_H
+      const ctx = canvas.getContext('2d')!
+      const escala = Math.max(TARGET_W / img.width, TARGET_H / img.height)
+      const w = img.width * escala
+      const h = img.height * escala
+      ctx.drawImage(img, (TARGET_W - w) / 2, (TARGET_H - h) / 2, w, h)
+      canvas.toBlob(
+        (blob) => { if (blob) resolve(blob); else reject(new Error('No se pudo optimizar')) },
+        'image/jpeg', CALIDAD,
+      )
+    }
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('No se pudo cargar')) }
+    img.src = url
+  })
+}
+
 /**
- * Sube un banner optimizado a 1200×450 JPEG.
+ * Redimensiona el banner a 1774×887 píxeles.
  */
 export async function subirImagenBanner(archivo: File): Promise<string> {
-  const blob = await optimizarImagenConTamano(archivo, 1200, 500)
+  const blob = await redimensionarBanner(archivo)
   const nombre = `banners/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`
   const { error } = await supabase.storage.from(BUCKET).upload(nombre, blob, {
     cacheControl: '3600', upsert: false, contentType: 'image/jpeg',

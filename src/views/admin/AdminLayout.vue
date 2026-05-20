@@ -11,6 +11,7 @@ import {
   IconArrowLeft,
   IconCategory,
   IconPhoto,
+  IconSettings,
 } from '@tabler/icons-vue'
 
 const route = useRoute()
@@ -25,6 +26,7 @@ const nav = [
   { name: 'admin-ordenes', label: 'Órdenes', icon: IconShoppingBag },
   { name: 'admin-noticias', label: 'Noticias', icon: IconNews },
   { name: 'admin-quejas', label: 'Quejas', icon: IconMessageReport },
+  { name: 'admin-configuracion', label: 'Configuración', icon: IconSettings },
 ]
 </script>
 

@@ -130,6 +130,12 @@ const router = createRouter({
           component: () => import('../views/admin/BannersAdminView.vue'),
           meta: { titulo: 'Banners publicitarios' },
         },
+        {
+          path: 'configuracion',
+          name: 'admin-configuracion',
+          component: () => import('../views/admin/ConfiguracionAdminView.vue'),
+          meta: { titulo: 'Configuración' },
+        },
       ],
     },
     // ── 404 ──────────────────────────────────────────────────────────
