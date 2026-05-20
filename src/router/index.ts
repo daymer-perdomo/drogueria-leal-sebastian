@@ -88,6 +88,13 @@ const router = createRouter({
           meta: { titulo: 'Capturar Producto' },
         },
         {
+          path: 'editar-producto/:id',
+          name: 'admin-editar-producto',
+          component: () => import('../views/admin/EditProductView.vue'),
+          meta: { titulo: 'Editar Producto' },
+          props: true,
+        },
+        {
           path: 'ordenes',
           name: 'admin-ordenes',
           component: () => import('../views/admin/OrdersView.vue'),

@@ -5,7 +5,7 @@ import { useNotification } from '../../composables/useNotification'
 import * as productsService from '../../services/products.service'
 import AppButton from '../../components/ui/AppButton.vue'
 import AppBadge from '../../components/ui/AppBadge.vue'
-import { IconPackage, IconPill } from '@tabler/icons-vue'
+import { IconPackage, IconPill, IconPencil } from '@tabler/icons-vue'
 
 const { productos, cargando, cargar } = useProducts({ soloActivos: false })
 const notif = useNotification()
@@ -97,14 +97,21 @@ function formatearPrecio(precio: number) {
                 </AppBadge>
               </td>
               <td class="px-4 py-3 text-center">
-                <AppButton
-                  :variante="p.activo ? 'ghost' : 'outline'"
-                  tamano="sm"
-                  :cargando="eliminando === p.id"
-                  @click="toggleActivo(p)"
-                >
-                  {{ p.activo ? 'Desactivar' : 'Activar' }}
-                </AppButton>
+                <div class="flex items-center justify-center gap-2">
+                  <RouterLink :to="{ name: 'admin-editar-producto', params: { id: p.id } }">
+                    <AppButton variante="outline" tamano="sm">
+                      <IconPencil class="w-3.5 h-3.5 mr-1" />Editar
+                    </AppButton>
+                  </RouterLink>
+                  <AppButton
+                    :variante="p.activo ? 'ghost' : 'outline'"
+                    tamano="sm"
+                    :cargando="eliminando === p.id"
+                    @click="toggleActivo(p)"
+                  >
+                    {{ p.activo ? 'Desactivar' : 'Activar' }}
+                  </AppButton>
+                </div>
               </td>
             </tr>
           </tbody>
