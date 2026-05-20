@@ -5,11 +5,12 @@ import { useNotification } from '../../composables/useNotification'
 import * as productsService from '../../services/products.service'
 import AppButton from '../../components/ui/AppButton.vue'
 import AppBadge from '../../components/ui/AppBadge.vue'
-import { IconPackage, IconPill, IconPencil } from '@tabler/icons-vue'
+import { IconPackage, IconPill, IconPencil, IconTrash, IconCheck, IconX } from '@tabler/icons-vue'
 
 const { productos, cargando, cargar } = useProducts({ soloActivos: false })
 const notif = useNotification()
 const eliminando = ref<string | null>(null)
+const confirmarEliminar = ref<string | null>(null)
 
 onMounted(cargar)
 
@@ -21,6 +22,20 @@ async function toggleActivo(producto: typeof productos.value[0]) {
     notif.exito(`Producto ${producto.activo ? 'desactivado' : 'activado'}`)
   } catch (err) {
     notif.error(err instanceof Error ? err.message : 'Error al actualizar')
+  } finally {
+    eliminando.value = null
+  }
+}
+
+async function borrar(id: string) {
+  eliminando.value = id
+  confirmarEliminar.value = null
+  try {
+    await productsService.borrarProducto(id)
+    await cargar()
+    notif.exito('Producto eliminado')
+  } catch (err) {
+    notif.error(err instanceof Error ? err.message : 'Error al eliminar')
   } finally {
     eliminando.value = null
   }
@@ -111,6 +126,34 @@ function formatearPrecio(precio: number) {
                   >
                     {{ p.activo ? 'Desactivar' : 'Activar' }}
                   </AppButton>
+                  <!-- Confirmación inline de eliminación -->
+                  <template v-if="confirmarEliminar === p.id">
+                    <AppButton
+                      variante="ghost"
+                      tamano="sm"
+                      :cargando="eliminando === p.id"
+                      class="text-error hover:text-error"
+                      @click="borrar(p.id)"
+                    >
+                      <IconCheck class="w-3.5 h-3.5 mr-1" />Sí, borrar
+                    </AppButton>
+                    <button
+                      type="button"
+                      class="text-text-muted hover:text-text-primary transition-colors"
+                      @click="confirmarEliminar = null"
+                    >
+                      <IconX class="w-4 h-4" />
+                    </button>
+                  </template>
+                  <button
+                    v-else
+                    type="button"
+                    class="text-text-muted hover:text-error transition-colors p-1"
+                    title="Eliminar producto"
+                    @click="confirmarEliminar = p.id"
+                  >
+                    <IconTrash class="w-4 h-4" />
+                  </button>
                 </div>
               </td>
             </tr>

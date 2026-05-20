@@ -108,6 +108,18 @@ export async function eliminarProducto(id: string): Promise<void> {
 }
 
 /**
+ * Borra definitivamente un producto de la base de datos (requiere rol admin).
+ */
+export async function borrarProducto(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('productos')
+    .delete()
+    .eq('id', id)
+
+  if (error) throw error
+}
+
+/**
  * Cuenta el total de productos según filtros.
  */
 export async function contarProductos(filtros: Pick<FiltrosProducto, 'categoriaId' | 'soloActivos' | 'busqueda'> = {}): Promise<number> {
