@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { ProductoConCategoria } from '../../types/product.types'
 import { useCart } from '../../composables/useCart'
@@ -11,6 +12,8 @@ import { IconBrandWhatsapp, IconShoppingCart, IconPill } from '@tabler/icons-vue
 const props = defineProps<{
   producto: ProductoConCategoria
 }>()
+
+const imgCargada = ref(false)
 
 const { agregarAlCarrito } = useCart()
 const { pedirProducto } = useWhatsapp()
@@ -52,13 +55,21 @@ async function onPedirWhatsapp() {
   <div class="card overflow-hidden flex flex-col group transition-shadow duration-base hover:shadow-lg">
     <!-- Imagen -->
     <RouterLink :to="{ name: 'producto-detalle', params: { id: producto.id } }">
-      <div class="aspect-square bg-surface-muted overflow-hidden">
-        <img
-          v-if="producto.imagenes?.[0]"
-          :src="producto.imagenes[0]"
-          :alt="producto.nombre"
-          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-slow"
-        />
+      <div class="aspect-square bg-surface-muted overflow-hidden relative">
+        <template v-if="producto.imagenes?.[0]">
+          <div
+            class="absolute inset-0 animate-pulse bg-surface-muted"
+            :style="{ opacity: imgCargada ? 0 : 1, transition: 'opacity 0.3s ease' }"
+          />
+          <img
+            :src="producto.imagenes[0]"
+            :alt="producto.nombre"
+            loading="lazy"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-slow"
+            :style="{ opacity: imgCargada ? 1 : 0, transition: 'opacity 0.3s ease' }"
+            @load="imgCargada = true"
+          />
+        </template>
         <div v-else class="w-full h-full flex items-center justify-center text-text-muted opacity-30">
           <IconPill class="w-16 h-16" />
         </div>

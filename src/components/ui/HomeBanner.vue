@@ -72,6 +72,8 @@ onUnmounted(pausar)
           <img
             :src="bannerActual.imagen_url"
             :alt="bannerActual.titulo ?? 'Banner'"
+            :loading="actual === 0 ? 'eager' : 'lazy'"
+            :fetchpriority="actual === 0 ? 'high' : 'auto'"
             class="w-full h-full object-contain"
             @load="imagenCargada"
             @change="cargarImagen"
