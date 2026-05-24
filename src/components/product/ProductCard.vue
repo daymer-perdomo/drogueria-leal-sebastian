@@ -3,6 +3,7 @@ import { RouterLink } from 'vue-router'
 import type { ProductoConCategoria } from '../../types/product.types'
 import { useCart } from '../../composables/useCart'
 import { useWhatsapp } from '../../composables/useWhatsapp'
+import * as ordersService from '../../services/orders.service'
 import AppButton from '../ui/AppButton.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import { IconBrandWhatsapp, IconShoppingCart, IconPill } from '@tabler/icons-vue'
@@ -27,6 +28,24 @@ function onAgregarCarrito() {
     stock: props.producto.stock,
   })
 }
+
+async function onPedirWhatsapp() {
+  pedirProducto(props.producto.nombre, props.producto.precio)
+  try {
+    await ordersService.crearOrden({
+      items: [{
+        producto_id: props.producto.id,
+        nombre: props.producto.nombre,
+        precio: props.producto.precio,
+        cantidad: 1,
+        imagen: props.producto.imagenes?.[0],
+      }],
+      total: props.producto.precio,
+    })
+  } catch {
+    // silencioso si el usuario no está autenticado
+  }
+}
 </script>
 
 <template>
@@ -48,10 +67,13 @@ function onAgregarCarrito() {
 
     <!-- Contenido -->
     <div class="p-2 sm:p-4 flex flex-col flex-1 gap-1.5 sm:gap-2">
-      <AppBadge variante="default">{{ producto.categoria?.nombre }}</AppBadge>
+      <div class="flex items-center justify-between gap-1">
+        <AppBadge variante="default">{{ producto.categoria?.nombre }}</AppBadge>
+        <span v-if="producto.codigo" class="text-xs text-text-muted font-mono">{{ producto.codigo }}</span>
+      </div>
 
       <RouterLink :to="{ name: 'producto-detalle', params: { id: producto.id } }">
-        <h3 class="font-semibold text-text-primary text-xs sm:text-base leading-tight hover:text-primary transition-colors duration-base line-clamp-2">
+        <h3 class="font-semibold text-text-primary text-xs sm:text-base leading-tight hover:text-brand-blue transition-colors duration-base line-clamp-2">
           {{ producto.nombre }}
         </h3>
       </RouterLink>
@@ -59,7 +81,7 @@ function onAgregarCarrito() {
       <p class="hidden sm:block text-sm text-text-secondary line-clamp-2 sm:flex-1">{{ producto.descripcion }}</p>
 
       <div class="flex items-center justify-between mt-auto pt-1 sm:pt-2">
-        <span class="text-sm sm:text-xl font-bold text-primary">{{ formatearPrecio(producto.precio) }}</span>
+        <span class="text-sm sm:text-xl font-bold text-brand-blue">{{ formatearPrecio(producto.precio) }}</span>
         <AppBadge :variante="producto.stock > 0 ? 'success' : 'error'">
           {{ producto.stock > 0 ? `${producto.stock}` : 'Agotado' }}
         </AppBadge>
@@ -78,8 +100,8 @@ function onAgregarCarrito() {
         <AppButton
           tamano="sm"
           :disabled="producto.stock === 0"
-          class="flex-1 bg-[#25D366] hover:bg-[#1ebe5d] text-white border-0 focus-visible:ring-green-400"
-          @click="pedirProducto(producto.nombre, producto.precio)"
+          class="flex-1 bg-brand-green hover:bg-brand-green-dark text-white border-0 focus-visible:ring-brand-green"
+          @click="onPedirWhatsapp"
         >
           <IconBrandWhatsapp class="w-4 h-4" />
           <span class="hidden sm:inline">{{ producto.stock > 0 ? 'WhatsApp' : 'Sin stock' }}</span>

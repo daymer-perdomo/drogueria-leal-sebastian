@@ -25,15 +25,15 @@ const props = withDefaults(
 
 const clasesPorVariante: Record<Variante, string> = {
   primary:
-    'bg-primary text-text-inverse hover:bg-primary-700 focus-visible:ring-primary-500',
+    'bg-brand-green text-white hover:bg-brand-green-dark focus-visible:ring-brand-green',
   secondary:
-    'bg-accent text-text-inverse hover:bg-accent-700 focus-visible:ring-accent-500',
+    'bg-brand-turquoise text-white hover:bg-teal-700 focus-visible:ring-brand-turquoise',
   outline:
-    'border border-primary text-primary bg-transparent hover:bg-primary-50 focus-visible:ring-primary-500',
+    'border border-brand-green text-brand-green bg-transparent hover:bg-brand-green/10 focus-visible:ring-brand-green',
   ghost:
     'text-text-secondary bg-transparent hover:bg-surface-muted focus-visible:ring-border-strong',
   danger:
-    'bg-error text-text-inverse hover:opacity-90 focus-visible:ring-red-400',
+    'bg-error text-white hover:opacity-90 focus-visible:ring-red-400',
 }
 
 const clasesPorTamano: Record<Tamano, string> = {

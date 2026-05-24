@@ -98,7 +98,11 @@ function formatearPrecio(precio: number) {
                     class="w-10 h-10 rounded-md object-cover flex-shrink-0"
                   />
                   <span v-else class="w-10 h-10 rounded-md bg-surface-muted flex items-center justify-center flex-shrink-0 text-text-muted"><IconPill class="w-5 h-5" /></span>
-                  <span class="font-medium text-text-primary">{{ p.nombre }}</span>
+                  <div>
+                    <p class="font-medium text-text-primary leading-tight">{{ p.nombre }}</p>
+                    <p v-if="p.codigo" class="text-xs font-mono text-text-muted mt-0.5">{{ p.codigo }}</p>
+                    <p v-else class="text-xs text-text-muted mt-0.5 italic">Sin código</p>
+                  </div>
                 </div>
               </td>
               <td class="px-4 py-3 text-text-secondary">{{ p.categoria?.nombre }}</td>

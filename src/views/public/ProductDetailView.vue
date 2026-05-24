@@ -6,6 +6,7 @@ import AppButton from '../../components/ui/AppButton.vue'
 import AppBadge from '../../components/ui/AppBadge.vue'
 import { IconPill, IconAlertCircle, IconBrandWhatsapp, IconShoppingCart } from '@tabler/icons-vue'
 import { useWhatsapp } from '../../composables/useWhatsapp'
+import * as ordersService from '../../services/orders.service'
 
 const props = defineProps<{ id: string }>()
 const { producto, cargando, cargar } = useProductDetail(props.id)
@@ -30,9 +31,23 @@ function onAgregar() {
   })
 }
 
-function onWhatsapp() {
+async function onWhatsapp() {
   if (!producto.value) return
   pedirProducto(producto.value.nombre, producto.value.precio)
+  try {
+    await ordersService.crearOrden({
+      items: [{
+        producto_id: producto.value.id,
+        nombre: producto.value.nombre,
+        precio: producto.value.precio,
+        cantidad: 1,
+        imagen: producto.value.imagenes?.[0],
+      }],
+      total: producto.value.precio,
+    })
+  } catch {
+    // silencioso si el usuario no está autenticado
+  }
 }
 </script>
 
@@ -66,7 +81,7 @@ function onWhatsapp() {
           <button
             v-for="(img, i) in producto.imagenes"
             :key="i"
-            :class="['w-16 h-16 rounded-md overflow-hidden border-2 transition-colors duration-base', imagenActiva === i ? 'border-primary' : 'border-border']"
+            :class="['w-16 h-16 rounded-md overflow-hidden border-2 transition-colors duration-base', imagenActiva === i ? 'border-brand-blue' : 'border-border']"
             @click="imagenActiva = i"
           >
             <img :src="img" :alt="`Imagen ${i + 1}`" class="w-full h-full object-cover" />
@@ -76,9 +91,17 @@ function onWhatsapp() {
 
       <!-- Info -->
       <div class="flex-1">
-        <AppBadge variante="default" class="mb-2">{{ producto.categoria?.nombre }}</AppBadge>
+        <div class="flex items-center gap-2 mb-2 flex-wrap">
+          <AppBadge variante="default">{{ producto.categoria?.nombre }}</AppBadge>
+          <span
+            v-if="producto.codigo"
+            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-subtle border border-border text-xs font-mono text-text-secondary"
+          >
+            <span class="text-text-muted">Cód.</span>{{ producto.codigo }}
+          </span>
+        </div>
         <h1 class="text-3xl font-bold text-text-primary mb-2">{{ producto.nombre }}</h1>
-        <p class="text-3xl font-bold text-primary mb-4">{{ formatearPrecio(producto.precio) }}</p>
+        <p class="text-3xl font-bold text-brand-blue mb-4">{{ formatearPrecio(producto.precio) }}</p>
         <p class="text-text-secondary mb-6">{{ producto.descripcion }}</p>
 
         <div class="flex items-center gap-4 mb-6">
@@ -100,7 +123,7 @@ function onWhatsapp() {
           <AppButton
             tamano="lg"
             :disabled="producto.stock === 0"
-            class="bg-[#25D366] hover:bg-[#1ebe5d] text-white border-0 focus-visible:ring-green-400"
+            class="bg-brand-green hover:bg-brand-green-dark text-white border-0 focus-visible:ring-brand-green"
             @click="onWhatsapp"
           >
             <IconBrandWhatsapp class="w-5 h-5" />

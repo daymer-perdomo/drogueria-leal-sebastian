@@ -3,6 +3,7 @@ import { useCartStore } from '../stores/cart.store'
 import { useNotification } from './useNotification'
 import { useWhatsapp } from './useWhatsapp'
 import type { ItemCarrito } from '../types/order.types'
+import * as ordersService from '../services/orders.service'
 
 export function useCart() {
   const cartStore = useCartStore()
@@ -16,12 +17,29 @@ export function useCart() {
     cartStore.abrir()
   }
 
-  function pedirPorWhatsapp() {
+  async function pedirPorWhatsapp() {
     if (estaVacio.value) {
       notif.advertencia('El carrito está vacío')
       return
     }
-    pedirCarrito(items.value, total.value)
+
+    const snapshot = items.value.map(i => ({
+      producto_id: i.producto_id,
+      nombre: i.nombre,
+      precio: i.precio,
+      cantidad: i.cantidad,
+      imagen: i.imagen,
+    }))
+    const totalSnapshot = total.value
+
+    pedirCarrito(items.value, totalSnapshot)
+
+    try {
+      await ordersService.crearOrden({ items: snapshot, total: totalSnapshot })
+    } catch {
+      // silencioso si el usuario no está autenticado
+    }
+
     cartStore.vaciar()
     cartStore.cerrar()
   }

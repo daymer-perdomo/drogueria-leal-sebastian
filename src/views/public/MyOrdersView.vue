@@ -66,13 +66,33 @@ function formatearFecha(fecha: string) {
           </AppBadge>
         </div>
 
-        <ul class="flex flex-col gap-1 text-sm text-text-secondary mb-3">
-          <li v-for="(item, i) in orden.items" :key="i">
-            {{ item.cantidad }}× {{ item.nombre }}
+        <ul class="flex flex-col divide-y divide-border">
+          <li v-for="(item, i) in orden.items" :key="i" class="flex items-center gap-3 py-2">
+            <div class="w-12 h-12 rounded-lg overflow-hidden bg-surface-muted flex-shrink-0">
+              <img
+                v-if="item.imagen"
+                :src="item.imagen"
+                :alt="item.nombre"
+                class="w-full h-full object-cover"
+              />
+              <div v-else class="w-full h-full flex items-center justify-center">
+                <IconPackage class="w-5 h-5 text-text-muted opacity-40" />
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-text-primary truncate">{{ item.nombre }}</p>
+              <p class="text-xs text-text-muted">{{ item.cantidad }} {{ item.cantidad === 1 ? 'unidad' : 'unidades' }}</p>
+            </div>
+            <span class="text-sm font-semibold text-text-primary shrink-0">
+              {{ formatearPrecio(item.precio * item.cantidad) }}
+            </span>
           </li>
         </ul>
 
-        <div class="text-right font-bold text-primary">{{ formatearPrecio(orden.total) }}</div>
+        <div class="flex items-center justify-between mt-3 pt-3 border-t border-border">
+          <span class="text-sm text-text-muted">Total del pedido</span>
+          <span class="font-bold text-brand-blue text-base">{{ formatearPrecio(orden.total) }}</span>
+        </div>
       </div>
     </div>
   </main>

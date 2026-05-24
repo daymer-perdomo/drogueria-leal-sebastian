@@ -7,7 +7,7 @@ import { registroSchema } from '../../validators/auth.validator'
 import AppInput from '../../components/ui/AppInput.vue'
 import AppButton from '../../components/ui/AppButton.vue'
 import AppCard from '../../components/ui/AppCard.vue'
-import { IconPill } from '@tabler/icons-vue'
+import logoUrl from '../../assets/logo-2.png'
 
 const router = useRouter()
 const { registro, cargando, estaAutenticado } = useAuth()
@@ -32,9 +32,8 @@ const onSubmit = handleSubmit(async (values) => {
   <main class="min-h-screen flex items-center justify-center p-4 bg-background">
     <div class="w-full max-w-sm">
       <div class="text-center mb-8">
-        <IconPill class="w-10 h-10 text-primary mx-auto" />
-        <h1 class="text-2xl font-bold text-text-primary mt-2">Crear cuenta</h1>
-        <p class="text-text-secondary text-sm mt-1">Droguería Leal Sebastián</p>
+        <img :src="logoUrl" alt="Droguería Leal Sebastián" class="h-14 w-auto mx-auto" />
+        <h1 class="text-2xl font-bold text-text-primary mt-4">Crear cuenta</h1>
       </div>
 
       <AppCard>
@@ -52,7 +51,7 @@ const onSubmit = handleSubmit(async (values) => {
 
         <p class="text-center text-sm text-text-secondary mt-4">
           ¿Ya tienes cuenta?
-          <RouterLink :to="{ name: 'login' }" class="text-primary font-medium hover:underline">
+          <RouterLink :to="{ name: 'login' }" class="text-brand-blue font-medium hover:underline">
             Inicia sesión
           </RouterLink>
         </p>

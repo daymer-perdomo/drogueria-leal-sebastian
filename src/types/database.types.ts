@@ -204,6 +204,7 @@ export type Database = {
           activo: boolean
           campos_extra: Json
           categoria_id: string | null
+          codigo: string | null
           created_at: string
           descripcion: string
           id: string
@@ -216,6 +217,7 @@ export type Database = {
           activo?: boolean
           campos_extra?: Json
           categoria_id?: string | null
+          codigo?: string | null
           created_at?: string
           descripcion?: string
           id?: string
@@ -228,6 +230,7 @@ export type Database = {
           activo?: boolean
           campos_extra?: Json
           categoria_id?: string | null
+          codigo?: string | null
           created_at?: string
           descripcion?: string
           id?: string
@@ -288,6 +291,16 @@ export type Database = {
     }
     Functions: {
       es_admin: { Args: never; Returns: boolean }
+      buscar_sugerencias: {
+        Args: { q: string; lim?: number }
+        Returns: {
+          id: string
+          codigo: string | null
+          nombre: string
+          precio: number
+          imagenes: string[]
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

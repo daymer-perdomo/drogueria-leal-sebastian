@@ -58,23 +58,23 @@ function formatearPrecio(precio: number) {
 
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-text-primary truncate">{{ item.nombre }}</p>
-                <p class="text-sm text-primary font-semibold mt-0.5">{{ formatearPrecio(item.precio) }}</p>
+                <p class="text-sm text-brand-blue font-semibold mt-0.5">{{ formatearPrecio(item.precio) }}</p>
 
                 <div class="flex items-center gap-2 mt-2">
-                  <button
-                    class="w-7 h-7 rounded-md border border-border flex items-center justify-center text-text-secondary hover:border-primary hover:text-primary transition-colors duration-base"
-                    @click="actualizarCantidad(item.producto_id, item.cantidad - 1)"
-                  >
-                    −
-                  </button>
-                  <span class="text-sm font-medium w-6 text-center">{{ item.cantidad }}</span>
-                  <button
-                    class="w-7 h-7 rounded-md border border-border flex items-center justify-center text-text-secondary hover:border-primary hover:text-primary transition-colors duration-base"
-                    :disabled="item.cantidad >= item.stock"
-                    @click="actualizarCantidad(item.producto_id, item.cantidad + 1)"
-                  >
-                    +
-                  </button>
+                   <button
+                     class="w-7 h-7 rounded-md border border-border flex items-center justify-center text-text-secondary hover:border-brand-blue hover:text-brand-blue transition-colors duration-base"
+                     @click="actualizarCantidad(item.producto_id, item.cantidad - 1)"
+                   >
+                     −
+                   </button>
+                   <span class="text-sm font-medium w-6 text-center">{{ item.cantidad }}</span>
+                   <button
+                     class="w-7 h-7 rounded-md border border-border flex items-center justify-center text-text-secondary hover:border-brand-blue hover:text-brand-blue transition-colors duration-base"
+                     :disabled="item.cantidad >= item.stock"
+                     @click="actualizarCantidad(item.producto_id, item.cantidad + 1)"
+                   >
+                     +
+                   </button>
                   <button
                     class="ml-auto text-error text-xs hover:underline"
                     @click="quitar(item.producto_id)"
@@ -90,12 +90,12 @@ function formatearPrecio(precio: number) {
           <div v-if="!estaVacio" class="p-4 border-t border-border flex flex-col gap-3">
             <div class="flex justify-between items-center">
               <span class="font-medium text-text-secondary">Total estimado</span>
-              <span class="text-xl font-bold text-primary">{{ formatearPrecio(total) }}</span>
+              <span class="text-xl font-bold text-brand-blue">{{ formatearPrecio(total) }}</span>
             </div>
             <p class="text-xs text-text-muted text-center">
               El pedido se confirma vía WhatsApp
             </p>
-            <AppButton bloque class="bg-[#25D366] hover:bg-[#1ebe5d] text-white border-0 focus-visible:ring-green-400" @click="pedirPorWhatsapp">
+            <AppButton bloque class="bg-brand-green hover:bg-brand-green-dark text-white border-0 focus-visible:ring-brand-green" @click="pedirPorWhatsapp">
               <IconBrandWhatsapp class="w-5 h-5" />
               Pedir por WhatsApp
             </AppButton>

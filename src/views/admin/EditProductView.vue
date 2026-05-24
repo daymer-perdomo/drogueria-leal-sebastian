@@ -31,6 +31,7 @@ const categoriaActual = computed<Categoria | undefined>(() =>
 )
 
 const schemaBase = z.object({
+  codigo: z.string().optional(),
   nombre: z.string().min(2, 'Mínimo 2 caracteres'),
   descripcion: z.string().min(1, 'La descripción es requerida'),
   precio: z.coerce.number().positive('El precio debe ser mayor a 0'),
@@ -41,6 +42,7 @@ const { handleSubmit, errors, setValues } = useForm({
   validationSchema: toTypedSchema(schemaBase),
 })
 
+const { value: codigo } = useField<string>('codigo')
 const { value: nombre } = useField<string>('nombre')
 const { value: descripcion } = useField<string>('descripcion')
 const { value: precio } = useField<string>('precio')
@@ -72,6 +74,7 @@ onMounted(async () => {
     camposExtraProducto.value = producto.campos_extra ?? {}
 
     setValues({
+      codigo: producto.codigo ?? '',
       nombre: producto.nombre,
       descripcion: producto.descripcion,
       precio: String(producto.precio),
@@ -110,6 +113,7 @@ const onSubmit = handleSubmit(async (valores) => {
 
     await productsService.actualizarProducto({
       id: productoId,
+      codigo: valores.codigo || null,
       nombre: valores.nombre,
       descripcion: valores.descripcion,
       precio: Number(valores.precio),
@@ -219,6 +223,13 @@ const imagenMostrada = computed(() => fotoPreview.value ?? imagenExistente.value
       <section class="card p-5">
         <h2 class="font-semibold text-text-primary mb-4 text-lg">3. Datos del producto</h2>
         <div class="flex flex-col gap-4">
+          <AppInput
+            v-model="codigo"
+            id="codigo"
+            label="Código del producto"
+            placeholder="Ej: MED-001"
+            :error="errors.codigo"
+          />
           <AppInput
             v-model="nombre"
             id="nombre"

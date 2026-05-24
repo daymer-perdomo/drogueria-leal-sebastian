@@ -23,12 +23,12 @@ export async function registrarUsuario(
   if (error) throw error
   if (!data.user) throw new Error('No se pudo crear el usuario')
 
-  const { error: perfilError } = await supabase.from('perfiles').insert({
+  const { error: perfilError } = await supabase.from('perfiles').upsert({
     id: data.user.id,
     nombre,
     rol: 'cliente',
     telefono: telefono ?? null,
-  })
+  }, { onConflict: 'id' })
   if (perfilError) throw perfilError
 
   return data

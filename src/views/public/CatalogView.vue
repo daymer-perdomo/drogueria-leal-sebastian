@@ -25,11 +25,16 @@ onMounted(async () => {
     // categories are non-critical; proceed without filter sidebar
   }
   const slug = route.query.categoria as string | undefined
-  aplicarFiltros({ categoriaId: slugAId(slug) })
+  const q = route.query.busqueda as string | undefined
+  if (q) busqueda.value = q
+  aplicarFiltros({ categoriaId: slugAId(slug), busqueda: q || undefined })
 })
 
-watch(() => route.query.categoria, (slug) => {
-  aplicarFiltros({ categoriaId: slugAId(slug as string | undefined) })
+watch(() => route.query, (query) => {
+  const slug = query.categoria as string | undefined
+  const q = query.busqueda as string | undefined
+  if (q !== undefined) busqueda.value = q ?? ''
+  aplicarFiltros({ categoriaId: slugAId(slug), busqueda: q || undefined })
 })
 
 let timeout: ReturnType<typeof setTimeout>
@@ -60,7 +65,7 @@ function onBusqueda() {
             <ul class="flex flex-col gap-1">
               <li>
                 <button
-                  :class="['w-full text-left px-2 py-1.5 rounded-md text-sm transition-colors duration-base', !filtros.categoriaId ? 'bg-primary-50 text-primary font-medium' : 'text-text-secondary hover:bg-surface-muted']"
+                  :class="['w-full text-left px-2 py-1.5 rounded-md text-sm transition-colors duration-base', !filtros.categoriaId ? 'bg-brand-blue/10 text-brand-blue font-medium' : 'text-text-secondary hover:bg-surface-muted']"
                   @click="aplicarFiltros({ categoriaId: undefined })"
                 >
                   Todas
@@ -68,7 +73,7 @@ function onBusqueda() {
               </li>
               <li v-for="cat in categorias" :key="cat.id">
                 <button
-                  :class="['w-full text-left px-2 py-1.5 rounded-md text-sm transition-colors duration-base', filtros.categoriaId === cat.id ? 'bg-primary-50 text-primary font-medium' : 'text-text-secondary hover:bg-surface-muted']"
+                  :class="['w-full text-left px-2 py-1.5 rounded-md text-sm transition-colors duration-base', filtros.categoriaId === cat.id ? 'bg-brand-blue/10 text-brand-blue font-medium' : 'text-text-secondary hover:bg-surface-muted']"
                   @click="aplicarFiltros({ categoriaId: cat.id })"
                 >
                   {{ cat.nombre }}
@@ -89,7 +94,7 @@ function onBusqueda() {
           <button
             v-for="p in totalPaginas"
             :key="p"
-            :class="['w-9 h-9 rounded-md text-sm font-medium transition-colors duration-base', filtros.pagina === p ? 'bg-primary text-text-inverse' : 'border border-border text-text-secondary hover:border-primary hover:text-primary']"
+            :class="['w-9 h-9 rounded-md text-sm font-medium transition-colors duration-base', filtros.pagina === p ? 'bg-brand-blue text-white' : 'border border-border text-text-secondary hover:border-brand-blue hover:text-brand-blue']"
             @click="irAPagina(p)"
           >
             {{ p }}

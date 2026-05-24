@@ -1,5 +1,6 @@
 export interface Producto {
   id: string
+  codigo?: string | null
   nombre: string
   descripcion: string
   precio: number
@@ -20,6 +21,7 @@ export interface ProductoConCategoria extends Producto {
 }
 
 export interface CrearProductoInput {
+  codigo?: string | null
   nombre: string
   descripcion: string
   precio: number

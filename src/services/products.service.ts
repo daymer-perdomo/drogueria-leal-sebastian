@@ -18,7 +18,7 @@ export async function listarProductos(filtros: FiltrosProducto = {}): Promise<Pr
     query = query.eq('categoria_id', filtros.categoriaId)
   }
   if (filtros.busqueda) {
-    query = query.ilike('nombre', `%${filtros.busqueda}%`)
+    query = query.or(`nombre.ilike.%${filtros.busqueda}%,codigo.ilike.%${filtros.busqueda}%`)
   }
   if (filtros.precioMin !== undefined) {
     query = query.gte('precio', filtros.precioMin)
@@ -58,6 +58,7 @@ export async function crearProducto(input: CrearProductoInput): Promise<Producto
   const { data, error } = await supabase
     .from('productos')
     .insert({
+      codigo: input.codigo ?? null,
       nombre: input.nombre,
       descripcion: input.descripcion,
       precio: input.precio,
@@ -120,6 +121,40 @@ export async function borrarProducto(id: string): Promise<void> {
 }
 
 /**
+ * Búsqueda rápida para el dropdown del navbar (máx. 6 resultados).
+ */
+export async function buscarProductosRapido(termino: string, limite = 6): Promise<ProductoConCategoria[]> {
+  const { data, error } = await supabase
+    .from('productos')
+    .select('*, categoria:categorias(id, nombre, slug)')
+    .eq('activo', true)
+    .or(`nombre.ilike.%${termino}%,codigo.ilike.%${termino}%`)
+    .limit(limite)
+
+  if (error) throw error
+  return data as unknown as ProductoConCategoria[]
+}
+
+export interface ProductoSugerencia {
+  id: string
+  codigo: string | null
+  nombre: string
+  precio: number
+  imagenes: string[]
+}
+
+/**
+ * Busca productos similares usando pg_trgm + unaccent para manejar typos y acentos.
+ */
+export async function buscarSugerencias(termino: string, limite = 5): Promise<ProductoSugerencia[]> {
+  const { data, error } = await supabase
+    .rpc('buscar_sugerencias', { q: termino, lim: limite })
+
+  if (error) return []
+  return (data ?? []) as ProductoSugerencia[]
+}
+
+/**
  * Cuenta el total de productos según filtros.
  */
 export async function contarProductos(filtros: Pick<FiltrosProducto, 'categoriaId' | 'soloActivos' | 'busqueda'> = {}): Promise<number> {
@@ -127,7 +162,7 @@ export async function contarProductos(filtros: Pick<FiltrosProducto, 'categoriaI
 
   if (filtros.soloActivos !== false) query = query.eq('activo', true)
   if (filtros.categoriaId) query = query.eq('categoria_id', filtros.categoriaId)
-  if (filtros.busqueda) query = query.ilike('nombre', `%${filtros.busqueda}%`)
+  if (filtros.busqueda) query = query.or(`nombre.ilike.%${filtros.busqueda}%,codigo.ilike.%${filtros.busqueda}%`)
 
   const { count, error } = await query
   if (error) throw error
