@@ -5,6 +5,7 @@ import { useProducts } from '../../composables/useProducts'
 import ProductGrid from '../../components/product/ProductGrid.vue'
 import AppButton from '../../components/ui/AppButton.vue'
 import HomeBanner from '../../components/ui/HomeBanner.vue'
+import AppSpinner from '../../components/ui/AppSpinner.vue'
 import * as bannersService from '../../services/banners.service'
 import type { Banner } from '../../services/banners.service'
 import { getConfigs } from '../../services/configuracion.service'
@@ -75,9 +76,11 @@ const categorias = [
     <div class="container-app px-4 pt-6">
       <div
         v-if="cargandoBanners"
-        class="w-full rounded-xl bg-surface-muted animate-pulse"
+        class="w-full rounded-xl bg-surface-muted flex items-center justify-center"
         style="aspect-ratio: 1774 / 887;"
-      />
+      >
+        <AppSpinner size="lg" />
+      </div>
       <Transition name="fade-up">
         <HomeBanner v-if="!cargandoBanners && banners.length > 0" :banners="banners" />
       </Transition>
