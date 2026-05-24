@@ -21,6 +21,7 @@ import {
 
 const { productos, cargando, cargar } = useProducts({ porPagina: 8, soloActivos: true })
 const banners = ref<Banner[]>([])
+const cargandoBanners = ref(true)
 
 const whatsappNum          = ref(import.meta.env.VITE_WHATSAPP_NUMBER as string)
 const tiendaDireccion      = ref('Bogotá, Colombia')
@@ -39,7 +40,10 @@ const mapaSrc = computed(() => {
 onMounted(async () => {
   await Promise.all([
     cargar(),
-    bannersService.listarBanners(true).then((b) => { banners.value = b }).catch(() => {}),
+    bannersService.listarBanners(true)
+      .then((b) => { banners.value = b })
+      .catch(() => {})
+      .finally(() => { cargandoBanners.value = false }),
     getConfigs([
       'whatsapp_numero',
       'tienda_direccion', 'tienda_horario_semana', 'tienda_horario_domingo',
@@ -65,10 +69,18 @@ const categorias = [
 </script>
 
 <template>
+  <Transition name="page-appear" appear>
   <main>
     <!-- Banner publicitario -->
-    <div v-if="banners.length > 0" class="container-app px-4 pt-6">
-      <HomeBanner :banners="banners" />
+    <div class="container-app px-4 pt-6">
+      <div
+        v-if="cargandoBanners"
+        class="w-full rounded-xl bg-surface-muted animate-pulse"
+        style="aspect-ratio: 1774 / 887;"
+      />
+      <Transition name="fade-up">
+        <HomeBanner v-if="!cargandoBanners && banners.length > 0" :banners="banners" />
+      </Transition>
     </div>
 
     <!-- Hero -->
@@ -201,9 +213,26 @@ const categorias = [
       </div>
     </section>
   </main>
+  </Transition>
 </template>
 
 <style scoped>
+.page-appear-enter-active {
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.page-appear-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-up-enter-active {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.fade-up-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
 .loc-card {
   box-shadow: var(--shadow-lg);
 }
