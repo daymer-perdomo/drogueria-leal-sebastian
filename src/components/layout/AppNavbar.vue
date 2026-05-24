@@ -72,6 +72,13 @@ onUnmounted(() => {
       <!-- Navegación desktop -->
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
         <RouterLink
+          :to="{ name: 'home' }"
+          class="text-text-secondary hover:text-brand-blue transition-colors duration-base"
+          active-class="text-brand-blue"
+        >
+          Inicio
+        </RouterLink>
+        <RouterLink
           :to="{ name: 'catalogo' }"
           class="text-text-secondary hover:text-brand-blue transition-colors duration-base"
           active-class="text-brand-blue"
@@ -164,6 +171,7 @@ onUnmounted(() => {
         v-if="menuMovilAbierto"
         class="md:hidden border-t border-border bg-surface px-4 py-4 flex flex-col gap-3"
       >
+        <RouterLink :to="{ name: 'home' }" class="text-text-secondary py-2" @click="menuMovilAbierto = false">Inicio</RouterLink>
         <RouterLink :to="{ name: 'catalogo' }" class="text-text-secondary py-2" @click="menuMovilAbierto = false">Catálogo</RouterLink>
         <RouterLink :to="{ name: 'noticias' }" class="text-text-secondary py-2" @click="menuMovilAbierto = false">Noticias</RouterLink>
         <RouterLink :to="{ name: 'quejas' }" class="flex items-center gap-1.5 text-text-secondary py-2" @click="menuMovilAbierto = false">
