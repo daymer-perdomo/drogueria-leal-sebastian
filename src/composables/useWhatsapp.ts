@@ -30,7 +30,7 @@ export function useWhatsapp() {
     )
 
     const mensaje = [
-      'Hola 👋, me gustaría hacer el siguiente pedido en *Droguería Leal Sebastián*:',
+      'Hola 👋, me gustaría hacer el siguiente pedido en *Droguería Leal*:',
       '',
       ...lineas,
       '',
@@ -44,7 +44,7 @@ export function useWhatsapp() {
 
   function pedirProducto(nombre: string, precio: number) {
     const mensaje = [
-      'Hola 👋, me interesa el siguiente producto de *Droguería Leal Sebastián*:',
+      'Hola 👋, me interesa el siguiente producto de *Droguería Leal*:',
       '',
       `*${nombre}*`,
       `Precio: ${formatearPrecio(precio)}`,

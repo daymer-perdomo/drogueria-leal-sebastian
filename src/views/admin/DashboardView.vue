@@ -170,7 +170,7 @@ const sparkPath = computed(() => {
     <div class="brand-header">
       <div>
         <h1 class="text-xl font-bold text-white">Dashboard</h1>
-        <p class="text-sm mt-0.5" style="color: rgba(255,255,255,0.72)">Droguería Leal Sebastián — resumen operacional</p>
+        <p class="text-sm mt-0.5" style="color: rgba(255,255,255,0.72)">Droguería Leal — resumen operacional</p>
       </div>
       <RouterLink :to="{ name: 'admin-ordenes' }" class="header-btn">
         Ver órdenes <IconArrowRight class="w-3.5 h-3.5" />

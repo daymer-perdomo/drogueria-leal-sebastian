@@ -151,8 +151,8 @@ const router = createRouter({
 router.afterEach((to) => {
   const titulo = to.meta.titulo as string | undefined
   document.title = titulo
-    ? `${titulo} | Droguería Leal Sebastián`
-    : 'Droguería Leal Sebastián'
+    ? `${titulo} | Droguería Leal`
+    : 'Droguería Leal'
 })
 
 export default router

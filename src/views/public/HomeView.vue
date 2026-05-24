@@ -75,7 +75,7 @@ const categorias = [
     <section class="bg-gradient-to-br from-brand-blue/10 to-brand-turquoise/10 py-16 md:py-24">
       <div class="container-app text-center">
         <h1 class="text-3xl md:text-4xl font-bold text-brand-blue mb-4">
-          Droguería Leal Sebastián
+          Droguería Leal
         </h1>
         <p class="text-lg text-text-secondary max-w-xl mx-auto mb-8">
           Tu salud, nuestra prioridad. Medicamentos, vitaminas, cuidado personal y dispositivos médicos con atención experta.
@@ -139,7 +139,7 @@ const categorias = [
 
             <!-- Panel de información -->
             <div class="loc-info">
-              <h2 class="text-xl font-bold text-text-primary mb-1">Droguería Leal Sebastián</h2>
+              <h2 class="text-xl font-bold text-text-primary mb-1">Droguería Leal</h2>
               <p class="text-sm mb-6" style="color: var(--color-text-muted)">Tu farmacia de confianza</p>
 
               <ul class="flex flex-col gap-4 mb-7">
@@ -190,7 +190,7 @@ const categorias = [
             <div class="loc-map">
               <iframe
                 :src="mapaSrc"
-                title="Ubicación Droguería Leal Sebastián"
+                title="Ubicación Droguería Leal"
                 loading="lazy"
                 class="loc-iframe"
               />

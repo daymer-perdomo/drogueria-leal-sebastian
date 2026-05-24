@@ -30,7 +30,7 @@ onMounted(async () => {
 
       <!-- Marca -->
       <div>
-        <h3 class="font-bold text-lg mb-3">Droguería Leal Sebastián</h3>
+        <h3 class="font-bold text-lg mb-3">Droguería Leal</h3>
         <p class="text-sm leading-relaxed" style="color: var(--color-brand-turquoise)">
           Tu farmacia de confianza. Medicamentos, cuidado personal y más con atención especializada.
         </p>
@@ -98,7 +98,7 @@ onMounted(async () => {
     </div>
 
     <div class="border-t py-4 text-center text-xs text-gray-400" style="border-color: rgba(255,255,255,0.1)">
-      © {{ new Date().getFullYear() }} Droguería Leal Sebastián. Todos los derechos reservados.
+      © {{ new Date().getFullYear() }} Droguería Leal. Todos los derechos reservados.
     </div>
   </footer>
 </template>

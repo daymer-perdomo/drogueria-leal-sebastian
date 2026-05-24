@@ -32,7 +32,7 @@ const onSubmit = handleSubmit(async (values) => {
   <main class="min-h-screen flex items-center justify-center p-4 bg-background">
     <div class="w-full max-w-sm">
       <div class="text-center mb-8">
-        <img :src="logoUrl" alt="Droguería Leal Sebastián" class="h-14 w-auto mx-auto" />
+        <img :src="logoUrl" alt="Droguería Leal" class="h-14 w-auto mx-auto" />
         <h1 class="text-2xl font-bold text-text-primary mt-4">Crear cuenta</h1>
       </div>
 

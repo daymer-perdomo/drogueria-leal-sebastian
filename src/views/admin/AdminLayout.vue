@@ -39,7 +39,7 @@ const nav = [
     >
       <div class="p-4 border-b border-brand-blue/50">
         <p class="font-bold text-text-inverse text-sm">Panel Admin</p>
-        <p class="text-xs text-brand-turquoise mt-0.5">Droguería Leal Sebastián</p>
+        <p class="text-xs text-brand-turquoise mt-0.5">Droguería Leal</p>
       </div>
       <nav class="flex flex-col p-2 gap-1 flex-1">
         <RouterLink
