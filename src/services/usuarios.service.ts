@@ -33,7 +33,7 @@ async function callAdminFn(body: Record<string, unknown>): Promise<void> {
 }
 
 export async function listarUsuarios(): Promise<UsuarioAdmin[]> {
-  const { data, error } = await supabase.rpc('admin_listar_usuarios')
+  const { data, error } = await (supabase as any).rpc('admin_listar_usuarios')
   if (error) throw error
   return data as UsuarioAdmin[]
 }
