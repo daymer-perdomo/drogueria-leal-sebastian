@@ -119,6 +119,12 @@ const router = createRouter({
           meta: { titulo: 'Gestión de Clientes' },
         },
         {
+          path: 'usuarios',
+          name: 'admin-usuarios',
+          component: () => import('../views/admin/UsuariosAdminView.vue'),
+          meta: { titulo: 'Gestión de Usuarios' },
+        },
+        {
           path: 'categorias',
           name: 'admin-categorias',
           component: () => import('../views/admin/CategoriasAdminView.vue'),

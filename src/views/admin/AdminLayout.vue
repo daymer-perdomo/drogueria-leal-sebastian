@@ -8,6 +8,7 @@ import {
   IconNews,
   IconMessageReport,
   IconUsers,
+  IconShield,
   IconArrowLeft,
   IconCategory,
   IconPhoto,
@@ -19,6 +20,7 @@ const route = useRoute()
 const nav = [
   { name: 'admin-dashboard', label: 'Dashboard', icon: IconLayoutDashboard },
   { name: 'admin-clientes', label: 'Clientes', icon: IconUsers },
+  { name: 'admin-usuarios', label: 'Usuarios', icon: IconShield },
   { name: 'admin-productos', label: 'Productos', icon: IconPackage },
   { name: 'admin-capturar', label: 'Capturar Producto', icon: IconCamera },
   { name: 'admin-categorias', label: 'Categorías', icon: IconCategory },
