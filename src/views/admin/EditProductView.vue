@@ -7,6 +7,7 @@ import { useForm, useField } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
 import type { Categoria } from '../../types/category.types'
+import type { UnidadVenta } from '../../types/product.types'
 import * as categoriasService from '../../services/categories.service'
 import * as productsService from '../../services/products.service'
 import AppButton from '../../components/ui/AppButton.vue'
@@ -50,6 +51,23 @@ const { value: stock } = useField<string>('stock')
 
 const camposExtra = ref<Record<string, string | boolean>>({})
 
+// ── Unidades de venta ─────────────────────────────────────────────────────────
+const unidadesForm = ref({
+  caja: { habilitada: false, precio: '' },
+  tableta: { habilitada: false, precio: '' },
+})
+
+function unidadesParaGuardar(): UnidadVenta[] {
+  const result: UnidadVenta[] = []
+  if (unidadesForm.value.caja.habilitada && Number(unidadesForm.value.caja.precio) > 0) {
+    result.push({ tipo: 'caja', etiqueta: 'Caja', precio: Number(unidadesForm.value.caja.precio) })
+  }
+  if (unidadesForm.value.tableta.habilitada && Number(unidadesForm.value.tableta.precio) > 0) {
+    result.push({ tipo: 'tableta', etiqueta: 'Tableta', precio: Number(unidadesForm.value.tableta.precio) })
+  }
+  return result
+}
+
 watch(categoriaActual, (nueva) => {
   camposExtra.value = {}
   if (nueva) {
@@ -72,6 +90,15 @@ onMounted(async () => {
     categorias.value = cats
     imagenExistente.value = producto.imagenes?.[0] ?? null
     camposExtraProducto.value = producto.campos_extra ?? {}
+
+    // Cargar unidades de venta existentes
+    const uvExistentes = camposExtraProducto.value.unidades_venta as UnidadVenta[] | undefined
+    if (Array.isArray(uvExistentes)) {
+      const caja = uvExistentes.find(u => u.tipo === 'caja')
+      const tableta = uvExistentes.find(u => u.tipo === 'tableta')
+      if (caja) unidadesForm.value.caja = { habilitada: true, precio: String(caja.precio) }
+      if (tableta) unidadesForm.value.tableta = { habilitada: true, precio: String(tableta.precio) }
+    }
 
     setValues({
       codigo: producto.codigo ?? '',
@@ -111,6 +138,7 @@ const onSubmit = handleSubmit(async (valores) => {
       imagenes = [url]
     }
 
+    const uv = unidadesParaGuardar()
     await productsService.actualizarProducto({
       id: productoId,
       codigo: valores.codigo || null,
@@ -119,7 +147,7 @@ const onSubmit = handleSubmit(async (valores) => {
       precio: Number(valores.precio),
       stock: Number(valores.stock),
       categoria_id: categoriaSeleccionadaId.value,
-      campos_extra: { ...camposExtra.value },
+      campos_extra: { ...camposExtra.value, ...(uv.length ? { unidades_venta: uv } : {}) },
       ...(imagenes && { imagenes }),
     })
 
@@ -338,6 +366,56 @@ const imagenMostrada = computed(() => fotoPreview.value ?? imagenExistente.value
               />
             </div>
           </template>
+        </div>
+      </section>
+
+      <!-- Unidades de venta -->
+      <section class="card p-5">
+        <h2 class="font-semibold text-text-primary mb-1 text-lg">5. Unidades de venta</h2>
+        <p class="text-xs text-text-muted mb-4">Configura si el producto se puede vender por caja o por tableta individual, con su respectivo precio.</p>
+        <div class="flex flex-col gap-4">
+          <!-- Caja -->
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-3">
+              <input
+                id="uv-caja"
+                v-model="unidadesForm.caja.habilitada"
+                type="checkbox"
+                class="w-4 h-4 rounded border-border text-primary"
+              />
+              <label for="uv-caja" class="text-sm font-medium text-text-primary">Vender por Caja</label>
+            </div>
+            <div v-if="unidadesForm.caja.habilitada" class="ml-7">
+              <AppInput
+                v-model="unidadesForm.caja.precio"
+                id="uv-caja-precio"
+                label="Precio por caja (COP)"
+                tipo="number"
+                placeholder="0"
+              />
+            </div>
+          </div>
+          <!-- Tableta -->
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-3">
+              <input
+                id="uv-tableta"
+                v-model="unidadesForm.tableta.habilitada"
+                type="checkbox"
+                class="w-4 h-4 rounded border-border text-primary"
+              />
+              <label for="uv-tableta" class="text-sm font-medium text-text-primary">Vender por Tableta</label>
+            </div>
+            <div v-if="unidadesForm.tableta.habilitada" class="ml-7">
+              <AppInput
+                v-model="unidadesForm.tableta.precio"
+                id="uv-tableta-precio"
+                label="Precio por tableta (COP)"
+                tipo="number"
+                placeholder="0"
+              />
+            </div>
+          </div>
         </div>
       </section>
 

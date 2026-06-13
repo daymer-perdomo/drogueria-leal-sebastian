@@ -1,3 +1,9 @@
+export interface UnidadVenta {
+  tipo: 'caja' | 'tableta'
+  etiqueta: string
+  precio: number
+}
+
 export interface Producto {
   id: string
   codigo?: string | null

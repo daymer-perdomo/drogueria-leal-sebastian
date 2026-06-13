@@ -16,8 +16,6 @@ export async function crearOrden(input: CrearOrdenInput): Promise<Orden> {
       items: input.items as unknown as import('../types/database.types').Json,
       total: input.total,
       estado: 'pendiente',
-      caja_id: input.caja_id ?? null,
-      mesa_id: input.mesa_id ?? null,
     })
     .select()
     .single()

@@ -6,20 +6,7 @@ export interface ItemOrden {
   precio: number
   cantidad: number
   imagen?: string
-}
-
-export interface Caja {
-  id: string
-  nombre: string
-  activo: boolean
-  created_at?: string
-}
-
-export interface Mesa {
-  id: string
-  nombre: string
-  activo: boolean
-  created_at?: string
+  unidad?: string
 }
 
 export interface Orden {
@@ -28,16 +15,12 @@ export interface Orden {
   items: ItemOrden[]
   total: number
   estado: EstadoOrden
-  caja_id?: string | null
-  mesa_id?: string | null
   created_at?: string
 }
 
 export interface CrearOrdenInput {
   items: ItemOrden[]
   total: number
-  caja_id?: string | null
-  mesa_id?: string | null
 }
 
 export interface ItemCarrito {
@@ -47,4 +30,5 @@ export interface ItemCarrito {
   cantidad: number
   imagen?: string
   stock: number
+  unidad?: string
 }

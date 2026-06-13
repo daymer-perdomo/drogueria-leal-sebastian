@@ -1,62 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useCart } from '../../composables/useCart'
 import AppButton from '../ui/AppButton.vue'
-import AppModal from '../ui/AppModal.vue'
-import { IconX, IconShoppingCartOff, IconPill, IconBrandWhatsapp, IconAlertCircle } from '@tabler/icons-vue'
-import * as cajasService from '../../services/cajas.service'
-import * as mesasService from '../../services/mesas.service'
-import type { Caja, Mesa } from '../../types/order.types'
+import { IconX, IconShoppingCartOff, IconPill, IconBrandWhatsapp } from '@tabler/icons-vue'
 
 const { items, total, estaVacio, abierto, cerrar, quitar, actualizarCantidad, pedirPorWhatsapp } = useCart()
 
 function formatearPrecio(precio: number) {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(precio)
-}
-
-// ── Modal selección caja / mesa ───────────────────────────────────────────────
-const mostrarModal = ref(false)
-const cajas = ref<Caja[]>([])
-const mesas = ref<Mesa[]>([])
-const cajaSeleccionada = ref<Caja | null>(null)
-const mesaSeleccionada = ref<Mesa | null>(null)
-const cargandoOpciones = ref(false)
-const enviando = ref(false)
-
-async function abrirModal() {
-  mostrarModal.value = true
-  if (cajas.value.length === 0 || mesas.value.length === 0) {
-    cargandoOpciones.value = true
-    try {
-      const [c, m] = await Promise.all([cajasService.listarCajas(), mesasService.listarMesas()])
-      cajas.value = c
-      mesas.value = m
-    } finally {
-      cargandoOpciones.value = false
-    }
-  }
-}
-
-function cerrarModal() {
-  mostrarModal.value = false
-}
-
-async function confirmarPedido() {
-  if (!cajaSeleccionada.value || !mesaSeleccionada.value) return
-  enviando.value = true
-  try {
-    await pedirPorWhatsapp(
-      cajaSeleccionada.value.id,
-      mesaSeleccionada.value.id,
-      cajaSeleccionada.value.nombre,
-      mesaSeleccionada.value.nombre,
-    )
-    cerrarModal()
-    cajaSeleccionada.value = null
-    mesaSeleccionada.value = null
-  } finally {
-    enviando.value = false
-  }
 }
 </script>
 
@@ -108,6 +58,7 @@ async function confirmarPedido() {
 
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-text-primary truncate">{{ item.nombre }}</p>
+                <p v-if="item.unidad" class="text-xs text-text-muted">{{ item.unidad }}</p>
                 <p class="text-sm text-brand-blue font-semibold mt-0.5">{{ formatearPrecio(item.precio) }}</p>
 
                 <div class="flex items-center gap-2 mt-2">
@@ -145,7 +96,7 @@ async function confirmarPedido() {
             <p class="text-xs text-text-muted text-center">
               El pedido se confirma vía WhatsApp
             </p>
-            <AppButton bloque class="bg-brand-green hover:bg-brand-green-dark text-white border-0 focus-visible:ring-brand-green" @click="abrirModal">
+            <AppButton bloque class="bg-brand-green hover:bg-brand-green-dark text-white border-0 focus-visible:ring-brand-green" @click="pedirPorWhatsapp">
               <IconBrandWhatsapp class="w-5 h-5" />
               Pedir por WhatsApp
             </AppButton>
@@ -154,83 +105,6 @@ async function confirmarPedido() {
       </div>
     </Transition>
   </Teleport>
-
-  <!-- Modal: selección de caja y mesa -->
-  <AppModal :abierto="mostrarModal" titulo="Selecciona caja y mesa" tamano="sm" @cerrar="cerrarModal">
-    <div class="flex flex-col gap-5">
-
-      <!-- Cargando -->
-      <div v-if="cargandoOpciones" class="flex flex-col gap-3">
-        <div class="h-8 bg-surface-muted rounded animate-pulse" />
-        <div class="grid grid-cols-3 gap-2">
-          <div v-for="n in 3" :key="n" class="h-10 bg-surface-muted rounded animate-pulse" />
-        </div>
-      </div>
-
-      <template v-else>
-        <!-- Sin cajas configuradas -->
-        <div v-if="cajas.length === 0 || mesas.length === 0" class="flex flex-col items-center gap-2 py-4 text-text-muted text-sm text-center">
-          <IconAlertCircle class="w-8 h-8 opacity-50" />
-          <p>No hay cajas o mesas configuradas.<br>Contacta al administrador.</p>
-        </div>
-
-        <template v-else>
-          <!-- Selección de caja -->
-          <div>
-            <p class="text-sm font-semibold text-text-primary mb-2">Caja <span class="text-error">*</span></p>
-            <div class="grid grid-cols-3 gap-2">
-              <button
-                v-for="caja in cajas"
-                :key="caja.id"
-                type="button"
-                :class="[
-                  'py-2 px-3 rounded-lg border text-sm font-medium transition-colors duration-base',
-                  cajaSeleccionada?.id === caja.id
-                    ? 'border-brand-blue bg-brand-blue text-white'
-                    : 'border-border text-text-primary hover:border-brand-blue hover:text-brand-blue',
-                ]"
-                @click="cajaSeleccionada = caja"
-              >
-                {{ caja.nombre }}
-              </button>
-            </div>
-          </div>
-
-          <!-- Selección de mesa -->
-          <div>
-            <p class="text-sm font-semibold text-text-primary mb-2">Mesa <span class="text-error">*</span></p>
-            <div class="grid grid-cols-3 gap-2">
-              <button
-                v-for="mesa in mesas"
-                :key="mesa.id"
-                type="button"
-                :class="[
-                  'py-2 px-3 rounded-lg border text-sm font-medium transition-colors duration-base',
-                  mesaSeleccionada?.id === mesa.id
-                    ? 'border-brand-blue bg-brand-blue text-white'
-                    : 'border-border text-text-primary hover:border-brand-blue hover:text-brand-blue',
-                ]"
-                @click="mesaSeleccionada = mesa"
-              >
-                {{ mesa.nombre }}
-              </button>
-            </div>
-          </div>
-
-          <AppButton
-            bloque
-            :cargando="enviando"
-            :disabled="!cajaSeleccionada || !mesaSeleccionada"
-            class="bg-brand-green hover:bg-brand-green-dark text-white border-0 focus-visible:ring-brand-green"
-            @click="confirmarPedido"
-          >
-            <IconBrandWhatsapp class="w-5 h-5" />
-            Confirmar y pedir
-          </AppButton>
-        </template>
-      </template>
-    </div>
-  </AppModal>
 </template>
 
 <style scoped>

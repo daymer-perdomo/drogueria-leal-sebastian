@@ -6,6 +6,7 @@ import { useForm, useField } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
 import type { Categoria } from '../../types/category.types'
+import type { UnidadVenta } from '../../types/product.types'
 import * as categoriasService from '../../services/categories.service'
 import * as productsService from '../../services/products.service'
 import AppButton from '../../components/ui/AppButton.vue'
@@ -61,6 +62,23 @@ watch(categoriaActual, (nueva) => {
   }
 })
 
+// ── Unidades de venta ────────────────────────────────────────────────────────
+const unidadesForm = ref({
+  caja: { habilitada: false, precio: '' },
+  tableta: { habilitada: false, precio: '' },
+})
+
+function unidadesParaGuardar(): UnidadVenta[] {
+  const result: UnidadVenta[] = []
+  if (unidadesForm.value.caja.habilitada && Number(unidadesForm.value.caja.precio) > 0) {
+    result.push({ tipo: 'caja', etiqueta: 'Caja', precio: Number(unidadesForm.value.caja.precio) })
+  }
+  if (unidadesForm.value.tableta.habilitada && Number(unidadesForm.value.tableta.precio) > 0) {
+    result.push({ tipo: 'tableta', etiqueta: 'Tableta', precio: Number(unidadesForm.value.tableta.precio) })
+  }
+  return result
+}
+
 // ── Submit ───────────────────────────────────────────────────────────────────
 const guardando = ref(false)
 const exitoso = ref(false)
@@ -83,6 +101,7 @@ const onSubmit = handleSubmit(async (valores) => {
       return
     }
 
+    const uv = unidadesParaGuardar()
     await productsService.crearProducto({
       codigo: valores.codigo || null,
       nombre: valores.nombre,
@@ -91,7 +110,7 @@ const onSubmit = handleSubmit(async (valores) => {
       stock: Number(valores.stock),
       categoria_id: categoriaSeleccionadaId.value,
       imagenes: [urlImagen],
-      campos_extra: { ...camposExtra.value },
+      campos_extra: { ...camposExtra.value, ...(uv.length ? { unidades_venta: uv } : {}) },
       activo: true,
     })
 
@@ -101,6 +120,7 @@ const onSubmit = handleSubmit(async (valores) => {
     limpiar()
     categoriaSeleccionadaId.value = ''
     camposExtra.value = {}
+    unidadesForm.value = { caja: { habilitada: false, precio: '' }, tableta: { habilitada: false, precio: '' } }
     setTimeout(() => { exitoso.value = false }, 3000)
   } catch (err) {
     notif.error(err instanceof Error ? err.message : 'Error al guardar el producto')
@@ -315,6 +335,56 @@ const onSubmit = handleSubmit(async (valores) => {
               />
             </div>
           </template>
+        </div>
+      </section>
+
+      <!-- PASO 5: Unidades de venta -->
+      <section class="card p-5">
+        <h2 class="font-semibold text-text-primary mb-1 text-lg">5. Unidades de venta</h2>
+        <p class="text-xs text-text-muted mb-4">Configura si el producto se puede vender por caja o por tableta individual, con su respectivo precio.</p>
+        <div class="flex flex-col gap-4">
+          <!-- Caja -->
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-3">
+              <input
+                id="uv-caja"
+                v-model="unidadesForm.caja.habilitada"
+                type="checkbox"
+                class="w-4 h-4 rounded border-border text-primary"
+              />
+              <label for="uv-caja" class="text-sm font-medium text-text-primary">Vender por Caja</label>
+            </div>
+            <div v-if="unidadesForm.caja.habilitada" class="ml-7">
+              <AppInput
+                v-model="unidadesForm.caja.precio"
+                id="uv-caja-precio"
+                label="Precio por caja (COP)"
+                tipo="number"
+                placeholder="0"
+              />
+            </div>
+          </div>
+          <!-- Tableta -->
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-3">
+              <input
+                id="uv-tableta"
+                v-model="unidadesForm.tableta.habilitada"
+                type="checkbox"
+                class="w-4 h-4 rounded border-border text-primary"
+              />
+              <label for="uv-tableta" class="text-sm font-medium text-text-primary">Vender por Tableta</label>
+            </div>
+            <div v-if="unidadesForm.tableta.habilitada" class="ml-7">
+              <AppInput
+                v-model="unidadesForm.tableta.precio"
+                id="uv-tableta-precio"
+                label="Precio por tableta (COP)"
+                tipo="number"
+                placeholder="0"
+              />
+            </div>
+          </div>
         </div>
       </section>
 

@@ -137,18 +137,6 @@ const router = createRouter({
           meta: { titulo: 'Banners publicitarios' },
         },
         {
-          path: 'cajas',
-          name: 'admin-cajas',
-          component: () => import('../views/admin/CajasAdminView.vue'),
-          meta: { titulo: 'Gestión de Cajas' },
-        },
-        {
-          path: 'mesas',
-          name: 'admin-mesas',
-          component: () => import('../views/admin/MesasAdminView.vue'),
-          meta: { titulo: 'Gestión de Mesas' },
-        },
-        {
           path: 'configuracion',
           name: 'admin-configuracion',
           component: () => import('../views/admin/ConfiguracionAdminView.vue'),

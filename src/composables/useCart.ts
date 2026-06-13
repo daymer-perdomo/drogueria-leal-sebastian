@@ -17,7 +17,7 @@ export function useCart() {
     cartStore.abrir()
   }
 
-  async function pedirPorWhatsapp(cajaId?: string, mesaId?: string, cajaNombre?: string, mesaNombre?: string) {
+  async function pedirPorWhatsapp() {
     if (estaVacio.value) {
       notif.advertencia('El carrito está vacío')
       return
@@ -29,13 +29,14 @@ export function useCart() {
       precio: i.precio,
       cantidad: i.cantidad,
       imagen: i.imagen,
+      unidad: i.unidad,
     }))
     const totalSnapshot = total.value
 
-    pedirCarrito(items.value, totalSnapshot, cajaNombre, mesaNombre)
+    pedirCarrito(items.value, totalSnapshot)
 
     try {
-      await ordersService.crearOrden({ items: snapshot, total: totalSnapshot, caja_id: cajaId, mesa_id: mesaId })
+      await ordersService.crearOrden({ items: snapshot, total: totalSnapshot })
     } catch {
       // silencioso si el usuario no está autenticado
     }
