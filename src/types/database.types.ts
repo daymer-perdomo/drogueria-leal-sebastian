@@ -47,6 +47,27 @@ export type Database = {
         }
         Relationships: []
       }
+      cajas: {
+        Row: {
+          activo: boolean
+          created_at: string
+          id: string
+          nombre: string
+        }
+        Insert: {
+          activo?: boolean
+          created_at?: string
+          id?: string
+          nombre: string
+        }
+        Update: {
+          activo?: boolean
+          created_at?: string
+          id?: string
+          nombre?: string
+        }
+        Relationships: []
+      }
       categorias: {
         Row: {
           campos_schema: Json
@@ -124,6 +145,27 @@ export type Database = {
         }
         Relationships: []
       }
+      mesas: {
+        Row: {
+          activo: boolean
+          created_at: string
+          id: string
+          nombre: string
+        }
+        Insert: {
+          activo?: boolean
+          created_at?: string
+          id?: string
+          nombre: string
+        }
+        Update: {
+          activo?: boolean
+          created_at?: string
+          id?: string
+          nombre?: string
+        }
+        Relationships: []
+      }
       noticias: {
         Row: {
           contenido: string
@@ -153,30 +195,51 @@ export type Database = {
       }
       ordenes: {
         Row: {
+          caja_id: string | null
           created_at: string
           estado: string
           id: string
           items: Json
+          mesa_id: string | null
           total: number
           user_id: string
         }
         Insert: {
+          caja_id?: string | null
           created_at?: string
           estado?: string
           id?: string
           items: Json
+          mesa_id?: string | null
           total: number
           user_id: string
         }
         Update: {
+          caja_id?: string | null
           created_at?: string
           estado?: string
           id?: string
           items?: Json
+          mesa_id?: string | null
           total?: number
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ordenes_caja_id_fkey"
+            columns: ["caja_id"]
+            isOneToOne: false
+            referencedRelation: "cajas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ordenes_mesa_id_fkey"
+            columns: ["mesa_id"]
+            isOneToOne: false
+            referencedRelation: "mesas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       perfiles: {
         Row: {
@@ -290,17 +353,49 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      es_admin: { Args: never; Returns: boolean }
-      buscar_sugerencias: {
-        Args: { q: string; lim?: number }
+      admin_actualizar_usuario: {
+        Args: {
+          nuevo_nombre: string
+          nuevo_rol: string
+          nuevo_telefono: string
+          target_user_id: string
+        }
+        Returns: boolean
+      }
+      admin_cambiar_password: {
+        Args: { nueva_password: string; target_user_id: string }
+        Returns: boolean
+      }
+      admin_eliminar_usuario: {
+        Args: { target_user_id: string }
+        Returns: boolean
+      }
+      admin_listar_usuarios: {
+        Args: never
         Returns: {
+          created_at: string
+          email: string
           id: string
-          codigo: string | null
+          last_sign_in_at: string
           nombre: string
-          precio: number
-          imagenes: string[]
+          rol: string
+          telefono: string
         }[]
       }
+      buscar_sugerencias: {
+        Args: { lim?: number; q: string }
+        Returns: {
+          codigo: string
+          id: string
+          imagenes: string[]
+          nombre: string
+          precio: number
+        }[]
+      }
+      es_admin: { Args: never; Returns: boolean }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
+      unaccent: { Args: { "": string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
