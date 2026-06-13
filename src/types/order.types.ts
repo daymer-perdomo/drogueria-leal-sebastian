@@ -8,18 +8,36 @@ export interface ItemOrden {
   imagen?: string
 }
 
+export interface Caja {
+  id: string
+  nombre: string
+  activo: boolean
+  created_at?: string
+}
+
+export interface Mesa {
+  id: string
+  nombre: string
+  activo: boolean
+  created_at?: string
+}
+
 export interface Orden {
   id: string
   user_id: string
   items: ItemOrden[]
   total: number
   estado: EstadoOrden
+  caja_id?: string | null
+  mesa_id?: string | null
   created_at?: string
 }
 
 export interface CrearOrdenInput {
   items: ItemOrden[]
   total: number
+  caja_id?: string | null
+  mesa_id?: string | null
 }
 
 export interface ItemCarrito {

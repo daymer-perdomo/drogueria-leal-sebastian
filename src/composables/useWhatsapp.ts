@@ -23,11 +23,15 @@ function formatearPrecio(precio: number) {
 export function useWhatsapp() {
   _cargarNumero()
 
-  function pedirCarrito(items: ItemCarrito[], total: number) {
+  function pedirCarrito(items: ItemCarrito[], total: number, cajaNombre?: string, mesaNombre?: string) {
     const lineas = items.map(
       (item) =>
         `• ${item.cantidad}× ${item.nombre} — ${formatearPrecio(item.precio * item.cantidad)}`,
     )
+
+    const extras: string[] = []
+    if (cajaNombre) extras.push(`🏧 *Caja:* ${cajaNombre}`)
+    if (mesaNombre) extras.push(`🪑 *Mesa:* ${mesaNombre}`)
 
     const mensaje = [
       'Hola 👋, me gustaría hacer el siguiente pedido en *Droguería Leal*:',
@@ -35,6 +39,7 @@ export function useWhatsapp() {
       ...lineas,
       '',
       `*Total: ${formatearPrecio(total)}*`,
+      ...(extras.length ? ['', ...extras] : []),
       '',
       '¿Pueden confirmar disponibilidad y forma de pago? Gracias.',
     ].join('\n')
